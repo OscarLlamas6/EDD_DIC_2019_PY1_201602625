@@ -84,7 +84,7 @@ void insertar_en(string name, double rating, int index){
         int index = 0;
         NodoArtista *aux = this->primero;
         while(aux!=0){
-            if(name.compare(this->getUltimo()->getArtista()->getName()) == -1){ index=0; break;} //Ingresa al inicio
+            if(name.compare(this->getPrimero()->getArtista()->getName()) == -1){ index=0; break;} //Ingresa al inicio
             if(name.compare(this->getUltimo()->getArtista()->getName()) == 1){index=size; break;} //Ingresa al final
             if(name.compare(aux->getArtista()->getName()) == 1){ index++;} //Busca la posición correcta
             if(name.compare(aux->getSiguiente()->getArtista()->getName()) == -1){ break;}                 

@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <time.h>
+#include <stdio.h>
 #include <conio.h>
 #include "Json/json.hpp"
 #include "ListaArtistas.cpp"
@@ -57,14 +58,21 @@ ListaArtistas *lista_artistas = new ListaArtistas();
     }
 }
 
-char getOpcionMenu(){
-    char c = cin.get();
-    if(c=='1'|| c=='2' || c=='3' || c=='4'|| c=='5' ){
-        return c;
-    } else {
-        return getOpcionMenu();
+
+void menuArtistas(){
+    system("cls");
+    cout << "---------------\"[ARTISTAS]\"---------------"<< endl;
+    cout << endl;
+    NodoArtista *aux = lista_artistas->getPrimero();
+    int x = 1;
+    while(aux!=0){
+        cout << x << ". " << aux->getArtista()->getName() << endl;
+        aux = aux->getSiguiente();
+        x++;
     }
 }
+
+
 
 void menuPrincipal(){
     system("cls");
@@ -73,27 +81,42 @@ void menuPrincipal(){
     cout << "Que desea hacer?"<< endl;
     cout << endl;
     cout << "1. Ver artistas\n2. Ver canciones\n3. Ver playlists\n4. ver de reportes\n5. Salir"<< endl;
-    char c = getOpcionMenu();
+    char c = cin.get();
     switch (c){
-        case '1': break;
+        case '1': menuArtistas(); break;
         case '2': break;
         case '3': break;
         case '4': break;
         case '5': break;
-        default:
+        default: menuPrincipal(); break;
     }
     
 }
 
+bool fexists(const std::string& filename) {
+  std::ifstream ifile(filename.c_str());
+  return (bool)ifile;
+}
 
- int main(){
-    system ("cls");
+
+void MensajeCarga(string anuncio){
     cout << "----------------[BIENVENIDO A Music++]----------------"<< endl;
     cout << endl;
     cout << "\t\t CARGA DE LIBRERIA "<< endl;
     cout << endl;
-    cout << "\tNombre del archivo (.json): ";
+    if(anuncio.compare("") !=0){
+    cout << "\t"<< anuncio << endl;} 
+    cout << "\tNombre del archivo (.json): ";     
     cin >> path;
+    if(!fexists(path)){
+        system("cls");
+        MensajeCarga("Archivo invalido o inexistente, intente de nuevo.");
+    }   
+}
+
+ int main(){
+    system ("cls");
+    MensajeCarga("");
     system ("cls");
     Cargar(path);
     cout << "Libreria cargada con exito. Presione ENTER para continuar";
