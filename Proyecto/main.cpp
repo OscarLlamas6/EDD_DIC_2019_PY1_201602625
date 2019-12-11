@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <time.h>
+#include <conio.h>
 #include "Json/json.hpp"
 #include "ListaArtistas.cpp"
 
@@ -21,6 +22,8 @@ ListaArtistas *lista_artistas = new ListaArtistas();
     file >> libreria;
     artistas = libreria["Library"];// aqui obtenemos un arreglo con cada artista existente en la libreria
     for (const auto& artista : artistas){ //iterando en cada artista de la libreria
+    string name_aux = artista["Artist"]["Name"];
+    lista_artistas->insertar_ordenado(name_aux, 6);
    /* std::cout << "Nombre del artista:" <<artista["Artist"]["Name"] << std::endl; //imprimimos el nombre de cada artista
     std::cout << endl;
     std::cout << "+++++++++++++++DISCOGRAFIA++++++++++++++++" << std::endl;*/
@@ -54,17 +57,47 @@ ListaArtistas *lista_artistas = new ListaArtistas();
     }
 }
 
+char getOpcionMenu(){
+    char c = cin.get();
+    if(c=='1'|| c=='2' || c=='3' || c=='4'|| c=='5' ){
+        return c;
+    } else {
+        return getOpcionMenu();
+    }
+}
+
+void menuPrincipal(){
+    system("cls");
+    cout << "---------------\"[MENU]\"---------------"<< endl;
+    cout << endl;
+    cout << "Que desea hacer?"<< endl;
+    cout << endl;
+    cout << "1. Ver artistas\n2. Ver canciones\n3. Ver playlists\n4. ver de reportes\n5. Salir"<< endl;
+    char c = getOpcionMenu();
+    switch (c){
+        case '1': break;
+        case '2': break;
+        case '3': break;
+        case '4': break;
+        case '5': break;
+        default:
+    }
+    
+}
+
+
  int main(){
     system ("cls");
-    cout << "---------------\"Bienvenido a Music++\"---------------"<< endl;
+    cout << "----------------[BIENVENIDO A Music++]----------------"<< endl;
     cout << endl;
-    cout << "Ingrese el nombre del archivo JSON para cargar libreria:" << endl;
+    cout << "\t\t CARGA DE LIBRERIA "<< endl;
+    cout << endl;
+    cout << "\tNombre del archivo (.json): ";
     cin >> path;
     system ("cls");
     Cargar(path);
-    cout<< "Libreria cargada con exito!" << endl;
-    sleepcp(2000);
-    cout << "Cerrando programa" << endl;
-  
-     return 0;
+    cout << "Libreria cargada con exito. Presione ENTER para continuar";
+    getch();
+    menuPrincipal();
+    return 0;
  }

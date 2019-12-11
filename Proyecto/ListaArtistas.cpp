@@ -18,9 +18,11 @@ public:
 
 int getSize(){ return this->size;}
 
-bool estaVacia(){
-    return this->size==0;
-}
+bool estaVacia(){ return this->size==0;}
+
+NodoArtista *getPrimero(){ return this->primero;}
+
+NodoArtista *getUltimo(){ return this->ultimo; }
 
 void insertar_inicio(string name, double rating){
     Artista *a = new Artista(name, rating);
@@ -71,6 +73,24 @@ void insertar_en(string name, double rating, int index){
         this->size++;
         
     }
+
+    
+}
+
+    void insertar_ordenado(string name, double rating){       
+        if(this->estaVacia()){
+            insertar_inicio(name, rating); return;
+        }
+        int index = 0;
+        NodoArtista *aux = this->primero;
+        while(aux!=0){
+            if(name.compare(this->getUltimo()->getArtista()->getName()) == -1){ index=0; break;} //Ingresa al inicio
+            if(name.compare(this->getUltimo()->getArtista()->getName()) == 1){index=size; break;} //Ingresa al final
+            if(name.compare(aux->getArtista()->getName()) == 1){ index++;} //Busca la posición correcta
+            if(name.compare(aux->getSiguiente()->getArtista()->getName()) == -1){ break;}                 
+            aux = aux->getSiguiente();           
+        }
+        this->insertar_en(name, rating, index);        
 }
 
 };

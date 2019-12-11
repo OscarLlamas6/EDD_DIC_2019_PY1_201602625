@@ -11,8 +11,8 @@ private:
     Discography discos;
 public:   
     Artista(string name, double rating){
-        this->rating = 0;
-        this->name = "";
+        this->rating = rating;
+        this->name = name;
     }        
     string getName(){ return this->name;};
     double getRating(){ return this->rating;};
