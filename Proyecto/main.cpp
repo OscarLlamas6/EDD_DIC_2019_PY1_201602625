@@ -24,7 +24,7 @@ ListaArtistas *lista_artistas = new ListaArtistas();
     artistas = libreria["Library"];// aqui obtenemos un arreglo con cada artista existente en la libreria
     for (const auto& artista : artistas){ //iterando en cada artista de la libreria
     string name_aux = artista["Artist"]["Name"];
-    lista_artistas->insertar_ordenado(name_aux, 6);
+    lista_artistas->insertar_ordenado(name_aux, 0);
    /* std::cout << "Nombre del artista:" <<artista["Artist"]["Name"] << std::endl; //imprimimos el nombre de cada artista
     std::cout << endl;
     std::cout << "+++++++++++++++DISCOGRAFIA++++++++++++++++" << std::endl;*/
@@ -80,7 +80,7 @@ void menuPrincipal(){
     cout << endl;
     cout << "Que desea hacer?"<< endl;
     cout << endl;
-    cout << "1. Ver artistas\n2. Ver canciones\n3. Ver playlists\n4. ver de reportes\n5. Salir"<< endl;
+    cout << "1. Ver artistas\n2. Ver canciones\n3. Ver playlists\n4. Importar playlists\n5. Ver reportes\n6. Salir"<< endl;
     char c = cin.get();
     switch (c){
         case '1': menuArtistas(); break;
@@ -88,6 +88,7 @@ void menuPrincipal(){
         case '3': break;
         case '4': break;
         case '5': break;
+        case '6': break;
         default: menuPrincipal(); break;
     }
     

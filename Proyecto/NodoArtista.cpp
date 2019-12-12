@@ -10,25 +10,11 @@ public:
         this->siguiente = 0;
         this->anterior = 0;
     }
-    Artista *getArtista(){
-        return this->artist;
-    }
-
-    void setSiguiente(NodoArtista *n){
-        this->siguiente = n;
-    }
-
-    void setAnterior(NodoArtista *n){
-        this->anterior = n;
-    }
-
-    NodoArtista *getSiguiente(){
-        return this->siguiente;
-    }
-
-    NodoArtista *getAnterior(){
-        return this->anterior;
-    }
+    Artista *getArtista(){return this->artist;}
+    void setSiguiente(NodoArtista *n){ this->siguiente = n;}
+    void setAnterior(NodoArtista *n){this->anterior = n;}
+    NodoArtista *getSiguiente(){return this->siguiente;}
+    NodoArtista *getAnterior(){return this->anterior;}
 
 private:
     NodoArtista *siguiente;

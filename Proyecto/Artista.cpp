@@ -1,6 +1,6 @@
 #include <iostream> 
-//#include "Cubo.cpp"
-#include "Discography.cpp"
+//#include "CuboDiscos.cpp"
+#include "Discografia.cpp"
 using namespace std;
 
 class Artista{

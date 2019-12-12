@@ -1,6 +1,6 @@
 #include <iostream>
 #include "NodoArtista.cpp"
-
+#include <fstream>
 using namespace std; 
 
 class ListaArtistas{
