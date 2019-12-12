@@ -1,6 +1,6 @@
 #include <iostream> 
-//#include "CuboDiscos.cpp"
-#include "Discografia.cpp"
+#include "CuboDiscos.cpp"
+#include <fstream>
 using namespace std;
 
 class Artista{
@@ -8,7 +8,7 @@ class Artista{
 private:
     string name;
     double rating;
-    Discography discos;
+    CuboDiscografia *discos;
 public:   
     Artista(string name, double rating){
         this->rating = rating;
