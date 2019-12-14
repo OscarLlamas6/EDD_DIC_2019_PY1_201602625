@@ -150,4 +150,31 @@ public:
             
         }
     }
+
+    NodoCubo *getAlbum(int index){
+        if(index>0 && index <=this->size){
+        int x = 1;
+        NodoCubo *aux = this->getRaiz()->getDerecha();
+        while(aux!=0){
+            NodoCubo *b = aux->getAdelante();
+            while(b!=0){
+                NodoCubo *a = b;
+                while(a!=0){
+                    if(x==index){ return a; }
+                    x++;
+                    a = a->getArriba();
+                }
+                b = b->getAdelante();
+            }
+            aux = aux->getDerecha();
+        }
+
+
+
+
+
+
+
+        } else { return 0; }
+    }
 };

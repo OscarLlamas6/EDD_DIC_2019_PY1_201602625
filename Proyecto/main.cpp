@@ -39,7 +39,7 @@ bool is_number(const std::string& s){
         s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
 }
 
- void Cargar(string path){
+void Cargar(string path){
     std::ifstream file(path);
     file >> libreria;
     artistas = libreria["Library"];// aqui obtenemos un arreglo con cada artista existente en la libreria
@@ -62,7 +62,7 @@ bool is_number(const std::string& s){
                 for(const auto& cancion : canciones){
                     string cancion_aux = cancion["Name"];
                     string rating_aux = cancion["Rating"];
-                    a->getSongs()->insertar(cancion_aux, a->getName(),artista_aux->getName() ,atof(rating_aux.c_str()));
+                    a->getSongs()->insertar(cancion_aux, a->getName(),artista_aux->getName(), atof(rating_aux.c_str()), a->getYear(),a->getMonth());
                     lista_canciones->insertar_ordenado(cancion_aux, a->getName(),artista_aux->getName(), atof(rating_aux.c_str()), a->getYear(),a->getMonth());                
                 }
             a->setRating(a->getSongs()->CalculateRating());
@@ -75,27 +75,137 @@ bool is_number(const std::string& s){
     }
 }
 
+void ReproducirCancion(NodoCancion *n){
+    system("cls");
+    cout << "---------------\"[REPRODUCIENDO]\"---------------"<< endl;
+    cout << endl;
+    cout << "\t Name: " << n->getCancion()->getName() << endl;
+    cout << "\t Artist: " << n->getCancion()->getArtista() << endl;
+    cout << "\t Album: " << n->getCancion()->getAlbum() << endl;
+    cout << "\t Month: " << n->getCancion()->getMonth() << endl;
+    cout << "\t Year: " << n->getCancion()->getYear() << endl;
+    cout << "\t Rating: " << n->getCancion()->getRating() << endl;
+    cout << endl;
+    cout << endl;
+    cout << "\tPresione cualquier tecla para salir.";
+    getch();
+}
+
+
+void DezplegarCanciones(NodoCubo *n){
+system("cls");
+    string name_aux = n->getAlbum()->getName();
+    std::for_each(name_aux.begin(), name_aux.end(), [](char & c) {
+		c = ::toupper(c);});
+    cout << "---------------\"["<<name_aux<<"]\"---------------"<< endl;
+    cout << endl;
+    int x = 1;
+    if(n->getAlbum()->getSongs()->getSize()>0){
+        NodoCancion *aux = n->getAlbum()->getSongs()->getPrimero();       
+    while(aux!=0){
+        cout << x << ". " << aux->getCancion()->getArtista()<< ":\t" <<aux->getCancion()->getName() << endl;
+        aux = aux->getSiguiente();
+        x++;
+    }
+        cout << endl;
+        cout << "Ingrese el numero de la cancion deseada." << endl;
+    } else {
+        cout << endl;
+        cout << "No hay canciones en este album." << endl;
+    }
+    cout << "s - Regresar a Albums" << endl;
+    cout << ">>";
+    string opcion;
+    cin >> opcion;
+
+    if(opcion == "s" || is_number(opcion)){
+        if(is_number(opcion)){
+            int index;
+            istringstream(opcion)>>index;
+            if(index >0 && index <x){
+                NodoCancion *aux = n->getAlbum()->getSongs()->getCancion(index);
+                ReproducirCancion(aux);
+                DezplegarCanciones(n);
+            } else {
+             DezplegarCanciones(n); 
+            }
+        }       
+    } else {
+        DezplegarCanciones(n);
+    }
+}
 
 void DezplegarAlbums(NodoArtista *n){
- 
+    system("cls");
+    string name_aux = n->getArtista()->getName();
+    std::for_each(name_aux.begin(), name_aux.end(), [](char & c) {
+		c = ::toupper(c);});
+    cout << "---------------\"["<<name_aux<<"]\"---------------"<< endl;
+    cout << endl;
+    int x = 1;
+    if(n->getArtista()->getDiscografia()->getSize()>0){        
+        NodoCubo *aux = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
+        while(aux!=0){
+            NodoCubo *b = aux->getAdelante();
+            while(b!=0){
+                NodoCubo *a = b;
+                while(a!=0){
+                    cout << x << ". " << a->getAlbum()->getYear() << ": " << a->getAlbum()->getName()<< endl;
+                    x++;
+                    a = a->getArriba();
+                }
+                b = b->getAdelante();
+            }
+            aux = aux->getDerecha();
+        }
+        cout << endl;
+        cout << "Ingrese el numero del album deseado." << endl;
+    } else {
+        cout << endl;
+        cout << "No hay albumes de este artista." << endl;
+    }   
+    cout << "s - Regresar a Artistas" << endl;
+    cout << ">>";
+    string opcion;
+    cin >> opcion;
+
+    if(opcion == "s" || is_number(opcion)){
+        if(is_number(opcion)){
+            int index;
+            istringstream(opcion)>>index;
+            if(index >0 && index <x){
+                NodoCubo *album_aux = n->getArtista()->getDiscografia()->getAlbum(index);
+                DezplegarCanciones(album_aux);
+                DezplegarAlbums(n);
+            } else {
+             DezplegarAlbums(n);  
+            }
+        }       
+    } else {
+        DezplegarAlbums(n);
+    }
 }
 
 void menuArtistas(){
     system("cls");
     cout << "---------------\"[ARTISTAS]\"---------------"<< endl;
     cout << endl;
-    NodoArtista *aux = lista_artistas->getPrimero();
     int x = 1;
+    if(lista_artistas->getSize()>0){
+        NodoArtista *aux = lista_artistas->getPrimero();
     while(aux!=0){
         cout << x << ". " << aux->getArtista()->getName() << endl;
         aux = aux->getSiguiente();
         x++;
     }
     cout << endl;
-    cout << "Ingrese el numero del artista deseado." << endl;
-    cout << " s - Regresar al menu principal." << endl;
+    cout << "Ingrese el numero del album deseado." << endl;
+    } else {
+    cout << endl;
+    cout << "No hay artistas disponibles." << endl;
+    }   
+    cout << "s - Regresar al menu principal." << endl;
     cout << ">>";
-
     string opcion;
     cin >> opcion;
     if(opcion == "s" || is_number(opcion)){
@@ -136,8 +246,9 @@ void menuCanciones(){
     system("cls");
     cout << "---------------\"[CANCIONES]\"---------------"<< endl;
     cout << endl;
-    NodoCancionOrdenado *aux = lista_canciones->getPrimero();
     int x = 1;
+    if(lista_canciones->getSize()>0){
+        NodoCancionOrdenado *aux = lista_canciones->getPrimero();   
     while(aux!=0){
         cout << x << ". " << aux->getCancion()->getArtista()<< ":\t" <<aux->getCancion()->getName() << endl;
         aux = aux->getSiguiente();
@@ -145,9 +256,14 @@ void menuCanciones(){
     }
     cout << endl;
     cout << "Ingrese el numero de la cancion deseada." << endl;
-    cout << " s - Regresar al menu principal." << endl;
-    cout << ">>";
+    } else {
+    cout << endl;
+    cout << "No hay canciones disponibles." << endl;
+    }
 
+
+    cout << "s - Regresar al menu principal." << endl;
+    cout << ">>";
     string opcion;
     cin >> opcion;
     if(opcion == "s" || is_number(opcion)){
@@ -173,7 +289,7 @@ void menuPrincipal(){
     cout << endl;
     cout << "Que desea hacer?"<< endl;
     cout << endl;
-    cout << "1. Ver artistas\n2. Ver canciones\n3. Ver playlists\n4. Importar playlists\n5. Ver reportes\n6. Salir"<< endl;
+    cout << "1. Ver artistas\n2. Ver canciones\n3. Ver playlists\n4. Importar playlists\n5. My Music++\n6. Salir"<< endl;
     char c = cin.get();
     switch (c){
         case '1': menuArtistas();
