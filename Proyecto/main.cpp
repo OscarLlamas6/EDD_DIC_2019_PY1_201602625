@@ -4,8 +4,11 @@
 #include <time.h>
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
+#include <sstream>
 #include "Json/json.hpp"
 #include "ListaArtistas.cpp"
+#include "ListaCancionesOrdenada.cpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -15,42 +18,10 @@ json artistas; //Variable Json para almacenar los artistas en formato json
 json albumes;  //Variable Json para almacenar los albumes en formato json
 json canciones; //Variable Json para almacenar las canciones en formato json
 ListaArtistas *lista_artistas = new ListaArtistas();
+ListaCancionesOrdenada *lista_canciones = new ListaCancionesOrdenada(); //Lista global de canciones
 
- void Cargar(string path){
-    
-   // cout << "----------------Informacion---------------" << endl;
-    std::ifstream file(path);
-    file >> libreria;
-    artistas = libreria["Library"];// aqui obtenemos un arreglo con cada artista existente en la libreria
-    for (const auto& artista : artistas){ //iterando en cada artista de la libreria
-    string name_aux = artista["Artist"]["Name"];
-    lista_artistas->insertar_ordenado(name_aux, 0);
-   /* std::cout << "Nombre del artista:" <<artista["Artist"]["Name"] << std::endl; //imprimimos el nombre de cada artista
-    std::cout << endl;
-    std::cout << "+++++++++++++++DISCOGRAFIA++++++++++++++++" << std::endl;*/
-    albumes = artista["Artist"]["Albums"]; //aqui obtenemos un arreglo con cada album del artista actual.
-        for(const auto& album : albumes ){      //iterando en cada album      
-           /* std::cout << "Nombre del album:" <<album["Name"] << std::endl; //imprimimos el nombre de cada album
-            std::cout << "Mes del album:" <<album["Month"] << std::endl; //imprimimos el mes de cada album
-            std::cout << "Anio del album:" <<album["Year"] << std::endl; //imprimimos el año de cada album
-            std::cout << endl;
-            std::cout << endl;
-            std::cout << "Canciones del album:" << std::endl;*/
-            canciones = album["Songs"]; // aqui obtenemos un arreglo con cada canción del album
-            
-                for(const auto& cancion : canciones){
-                    /*std::cout << "Nombre de la cancion:" <<cancion["Name"] << std::endl; //imprimimos el nombre de cada cancion
-                    std::cout << "Rating de la cancion:" <<cancion["Rating"] << std::endl; //imprimimos el rating de cada cancion
-                    std::cout << endl;*/
-                }
-            //std::cout << "........................................" << std::endl;
-        }
+ void sleepcp(int milliseconds) { // Función para pausar ejecución
 
-    }
- }
-
- void sleepcp(int milliseconds) // Función para pausar ejecución
-{
     clock_t time_end;
     time_end = clock() + milliseconds * CLOCKS_PER_SEC/1000;
     while (clock() < time_end)
@@ -58,6 +29,56 @@ ListaArtistas *lista_artistas = new ListaArtistas();
     }
 }
 
+bool fexists(const std::string& filename) {
+  std::ifstream ifile(filename.c_str());
+  return (bool)ifile;
+}
+
+bool is_number(const std::string& s){
+    return !s.empty() && std::find_if(s.begin(), 
+        s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+}
+
+ void Cargar(string path){
+    std::ifstream file(path);
+    file >> libreria;
+    artistas = libreria["Library"];// aqui obtenemos un arreglo con cada artista existente en la libreria
+    for (const auto& artista : artistas){ 
+    string name_aux = artista["Artist"]["Name"];
+    lista_artistas->insertar_ordenado(name_aux, 0);
+    Artista *artista_aux = lista_artistas->getArtista(name_aux)->getArtista();
+    CuboDiscografia *cubo_aux = artista_aux->getDiscografia();
+    albumes = artista["Artist"]["Albums"]; //aqui obtenemos un arreglo con cada album del artista actual.
+    double rating_aux = 0;   
+        for(const auto& album : albumes ){
+            string year = album["Year"];
+            int year_int;
+            istringstream(year)>>year_int;
+            system("cls");
+            string album_aux = album["Name"];
+            string mes_aux = album["Month"];
+            Album *a = new Album(album_aux, mes_aux, year_int);        
+            canciones = album["Songs"]; // aqui obtenemos un arreglo con cada canción del album            
+                for(const auto& cancion : canciones){
+                    string cancion_aux = cancion["Name"];
+                    string rating_aux = cancion["Rating"];
+                    a->getSongs()->insertar(cancion_aux, a->getName(),artista_aux->getName() ,atof(rating_aux.c_str()));
+                    lista_canciones->insertar_ordenado(cancion_aux, a->getName(),artista_aux->getName(), atof(rating_aux.c_str()), a->getYear(),a->getMonth());                
+                }
+            a->setRating(a->getSongs()->CalculateRating());
+            rating_aux+=a->getRating();
+            cubo_aux->insertar_nodo(a->getYear(),a->getMonth(),a);
+        }
+        double d = (double)cubo_aux->getSize();
+        rating_aux = rating_aux / d;
+        artista_aux->setRating(rating_aux);
+    }
+}
+
+
+void DezplegarAlbums(NodoArtista *n){
+ 
+}
 
 void menuArtistas(){
     system("cls");
@@ -70,9 +91,81 @@ void menuArtistas(){
         aux = aux->getSiguiente();
         x++;
     }
+    cout << endl;
+    cout << "Ingrese el numero del artista deseado." << endl;
+    cout << " s - Regresar al menu principal." << endl;
+    cout << ">>";
+
+    string opcion;
+    cin >> opcion;
+    if(opcion == "s" || is_number(opcion)){
+        if(is_number(opcion)){
+            int index;
+            istringstream(opcion)>>index;
+            if(index >0 && index <x){
+                NodoArtista *n = lista_artistas->getArtista_Index(index);
+                DezplegarAlbums(n);
+                menuArtistas();
+            } else {
+             menuArtistas();   
+            }
+        }       
+    } else {
+        menuArtistas();
+    }
+
 }
 
+void ReproducirCancionGlobal(NodoCancionOrdenado *n){
+    system("cls");
+    cout << "---------------\"[REPRODUCIENDO]\"---------------"<< endl;
+    cout << endl;
+    cout << "\t Name: " << n->getCancion()->getName() << endl;
+    cout << "\t Artist: " << n->getCancion()->getArtista() << endl;
+    cout << "\t Album: " << n->getCancion()->getAlbum() << endl;
+    cout << "\t Month: " << n->getCancion()->getMonth() << endl;
+    cout << "\t Year: " << n->getCancion()->getYear() << endl;
+    cout << "\t Rating: " << n->getCancion()->getRating() << endl;
+    cout << endl;
+    cout << endl;
+    cout << "\tPresione cualquier tecla para salir.";
+    getch();
+}
 
+void menuCanciones(){
+    system("cls");
+    cout << "---------------\"[CANCIONES]\"---------------"<< endl;
+    cout << endl;
+    NodoCancionOrdenado *aux = lista_canciones->getPrimero();
+    int x = 1;
+    while(aux!=0){
+        cout << x << ". " << aux->getCancion()->getArtista()<< ":\t" <<aux->getCancion()->getName() << endl;
+        aux = aux->getSiguiente();
+        x++;
+    }
+    cout << endl;
+    cout << "Ingrese el numero de la cancion deseada." << endl;
+    cout << " s - Regresar al menu principal." << endl;
+    cout << ">>";
+
+    string opcion;
+    cin >> opcion;
+    if(opcion == "s" || is_number(opcion)){
+        if(is_number(opcion)){
+            int index;
+            istringstream(opcion)>>index;
+            if(index >0 && index <x){
+                NodoCancionOrdenado *aux = lista_canciones->getCancion(index);
+                ReproducirCancionGlobal(aux);
+                menuCanciones();
+            } else {
+             menuCanciones();   
+            }
+        }       
+    } else {
+        menuCanciones();
+    }
+}
 
 void menuPrincipal(){
     system("cls");
@@ -83,22 +176,19 @@ void menuPrincipal(){
     cout << "1. Ver artistas\n2. Ver canciones\n3. Ver playlists\n4. Importar playlists\n5. Ver reportes\n6. Salir"<< endl;
     char c = cin.get();
     switch (c){
-        case '1': menuArtistas(); break;
-        case '2': break;
+        case '1': menuArtistas();
+                  menuPrincipal();
+                  break;
+        case '2': menuCanciones();
+                  menuPrincipal();
+                  break;
         case '3': break;
         case '4': break;
         case '5': break;
         case '6': break;
         default: menuPrincipal(); break;
-    }
-    
+    }   
 }
-
-bool fexists(const std::string& filename) {
-  std::ifstream ifile(filename.c_str());
-  return (bool)ifile;
-}
-
 
 void MensajeCarga(string anuncio){
     cout << "----------------[BIENVENIDO A Music++]----------------"<< endl;
@@ -120,7 +210,7 @@ void MensajeCarga(string anuncio){
     MensajeCarga("");
     system ("cls");
     Cargar(path);
-    cout << "Libreria cargada con exito. Presione ENTER para continuar";
+    cout << "Libreria cargada con exito. Presione cualquier tecla para continuar";
     getch();
     menuPrincipal();
     return 0;

@@ -70,27 +70,54 @@ void insertar_en(string name, double rating, int index){
         n->setAnterior(aux->getAnterior());
         n->setSiguiente(aux);
         aux->setAnterior(n);
-        this->size++;
-        
-    }
-
-    
+        this->size++;       
+    }   
 }
 
     void insertar_ordenado(string name, double rating){       
         if(this->estaVacia()){
-            insertar_inicio(name, rating); return;
+            this->insertar_inicio(name, rating); return;
         }
         int index = 0;
         NodoArtista *aux = this->primero;
         while(aux!=0){
             if(name.compare(this->getPrimero()->getArtista()->getName()) == -1){ index=0; break;} //Ingresa al inicio
-            if(name.compare(this->getUltimo()->getArtista()->getName()) == 1){index=size; break;} //Ingresa al final
-            if(name.compare(aux->getArtista()->getName()) == 1){ index++;} //Busca la posición correcta
+            if(name.compare(this->getUltimo()->getArtista()->getName()) == 1 || name.compare(this->getUltimo()->getArtista()->getName()) == 0){index=size; break;} //Ingresa al final
+            if(name.compare(aux->getArtista()->getName()) == 1 || name.compare(this->getUltimo()->getArtista()->getName()) == 0){ index++;} //Busca la posición correcta
             if(name.compare(aux->getSiguiente()->getArtista()->getName()) == -1){ break;}                 
             aux = aux->getSiguiente();           
         }
         this->insertar_en(name, rating, index);        
+}
+
+NodoArtista *getArtista(string name){
+    if(this->size==0){
+        return 0;
+    } else
+    {
+        NodoArtista *aux = this->primero;
+        while(aux!=0){
+            if(aux->getArtista()->getName().compare(name)==0){ return aux;}
+            aux = aux->getSiguiente();
+        }
+    return 0;
+    }    
+}
+
+NodoArtista *getArtista_Index(int index){
+if(index>0 && index <=this->size){
+        if(index == this->size){ return this->ultimo;}
+         else {
+            NodoArtista *aux = this->primero;
+            int x = 1;
+            while(aux!=0){
+                if(x == index){ break;}
+                aux = aux->getSiguiente();
+                x++;
+            }
+            return aux;
+            }              
+       } else {return 0;}
 }
 
 };

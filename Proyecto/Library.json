@@ -55,13 +55,13 @@
             "Year" : "2004",
             "Songs": [
               {
-                "Name": "Young and Aspiring",
+                "Name": "Young and Aspiringz",
                 "File": "YoungAndAspiring.mp3",
                 "Rating": "8.0"
               }
               ,
               {
-                "Name": "Some Will Seek Forgiveness, Others Escape",
+                "Name": "Some Will Seek Forgiveness, Others Escaper",
                 "File": "SomeWillSeekForfiveness.mp3",
                 "Rating": "8.0"
               }
@@ -144,6 +144,12 @@
             "Month": "Septiembre",
             "Year": "2019",
             "Songs": [
+              {
+                "Name": "PIMP",
+                "File": "b.mp3",
+                "Rating": "6.0"
+              }
+              ,
               {
                 "Name": "Blinded",
                 "File": "b.mp3",
