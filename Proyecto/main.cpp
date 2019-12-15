@@ -341,10 +341,10 @@ void DiscographyReport(NodoArtista *n, string name){
             count++;
         }
     outfile << endl;
+    outfile << "Mt -> M0 [dir=back];" << endl;
     outfile << "Mt -> M0;" << endl;
+    outfile << "Mt -> A0 [dir=back];" << endl;
     outfile << "Mt -> A0;" << endl;
-   // outfile << "M0 -> Mt;" << endl;
-  //  outfile << "A0 -> Mt;" << endl;
 
     string rank = "{ rank = same; Mt;";
     count = 0;
@@ -356,6 +356,123 @@ void DiscographyReport(NodoArtista *n, string name){
     outfile << endl;
     outfile << rank << endl;
     outfile << endl;
+
+    NodoCubo *fil;
+    NodoCubo *col;
+    y= 0;
+    aux = n->getArtista()->getDiscografia()->getRaiz()->getAdelante();
+    while(aux!=0){
+    fil = aux->getDerecha();
+    col = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
+    x = 0;    
+    group = 2;
+    while(fil!=0 && col!=0){
+        if(fil->getX() == col->getX()){
+            outfile <<"M"<<y<<"A"<<x<<"[label = \"" <<fil->getAlbum()->getName()<<"\", width = 1.5, group ="<<group<<"];"<<endl;
+            fil = fil->getDerecha();        
+        }
+        x++;
+        group++;       
+        col = col->getDerecha();       
+    }
+        y++;
+        aux = aux -> getAdelante();
+        outfile << endl;
+    }
+
+    bool primera_x;
+    y = 0;
+    aux = n->getArtista()->getDiscografia()->getRaiz()->getAdelante();
+    while(aux!=0){
+    col = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
+    fil = aux->getDerecha();
+    x = 0;    
+    primera_x = true;
+    while(fil!=0 && col!=0){
+
+            if(fil->getX() == col->getX()){
+                 if(primera_x){
+                primera_x = false;
+                count = x;
+                outfile << "M" << y << "-> M" << y << "A" << x << "[dir=back];" <<endl;
+                outfile << "M" << y << "-> M" << y << "A" << x << ";" <<endl;               
+                 } else {
+                outfile<< "M" << y << "A" << count << "-> M" << y << "A" << x << "[dir=back];" <<endl;
+                outfile<< "M" << y << "A" << count << "-> M" << y << "A" << x << ";" <<endl;
+                count = x;
+            }  
+            col = col->getDerecha();
+            fil = fil->getDerecha();
+            x++;
+            } else {
+                col = col -> getDerecha();
+                x++;
+            }              
+            }
+        y++;
+        aux = aux -> getAdelante();
+        outfile << endl;
+        }
+
+    
+    bool primera_y;
+    x= 0;   
+    aux = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
+    while(aux!=0){
+    fil = n->getArtista()->getDiscografia()->getRaiz()->getAdelante();
+    col = aux->getAdelante();
+    y = 0;
+    primera_y = true;
+    while(col!=0 && fil!=0){
+            if(col->getY() == fil->getY()){
+                if(primera_y){
+                primera_y = false;
+                count = y;
+                outfile << "A" << x << "-> M" << y << "A" << x << "[dir=back];" <<endl;
+                outfile << "A" << x << "-> M" << y << "A" << x << ";" <<endl;
+            } else {
+                outfile << "M" << count << "A" << x << "-> M" << y << "A" << x << "[dir=back];" << endl;
+                outfile << "M" << count << "A" << x << "-> M" << y << "A" << x << ";" << endl;
+                count = y;
+            }
+            fil = fil ->getAdelante();
+            y++;                    
+            col = col->getAdelante();                    
+            } else {
+                fil = fil ->getAdelante();
+                y++;  
+            }                         
+           }
+        x++;
+        aux = aux -> getDerecha();
+        outfile << endl;
+        }
+
+    aux = n->getArtista()->getDiscografia()->getRaiz()->getAdelante();    
+    y = 0;
+    while(aux!=0){
+    col = col = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
+    rank = "{ rank = same; M"+to_string(y)+";";
+    fil = aux->getDerecha();
+    x = 0;    
+    while(fil!=0 && col!=0){
+
+        if(fil->getX() == col->getX()){
+            rank+="M"+to_string(y)+"A"+to_string(x)+";";
+            col = col->getDerecha();                  
+            fil = fil->getDerecha();
+            x++; 
+        }else {
+          col = col->getDerecha();  
+           x++; 
+        }                
+    }
+        rank += "}";
+        outfile << rank << endl;
+        y++;
+        aux = aux -> getAdelante();
+    }
+
     outfile << "}" << endl;
     outfile.close();
     system("dot.exe -Tpng salida.dot -o salida.png");

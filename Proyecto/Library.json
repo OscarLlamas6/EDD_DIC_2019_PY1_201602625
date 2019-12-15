@@ -50,6 +50,44 @@
         "Name": "Alfredo",
         "Albums": [
           {
+            "Name": "Stll Dre",
+            "Month" : "Abril",
+            "Year" : "2002",
+            "Songs": [
+              {
+                "Name": "Young and Aspiringz",
+                "File": "YoungAndAspiring.mp3",
+                "Rating": "8.0"
+              }
+              ,
+              {
+                "Name": "Some Will Seek Forgiveness, Others Escaper",
+                "File": "SomeWillSeekForfiveness.mp3",
+                "Rating": "8.0"
+              }
+            ]
+          }
+          ,
+          {
+            "Name": "The Real Slim Shaddy",
+            "Month" : "Septiembre",
+            "Year" : "2002",
+            "Songs": [
+              {
+                "Name": "Young and Aspiringz",
+                "File": "YoungAndAspiring.mp3",
+                "Rating": "8.0"
+              }
+              ,
+              {
+                "Name": "Some Will Seek Forgiveness, Others Escaper",
+                "File": "SomeWillSeekForfiveness.mp3",
+                "Rating": "8.0"
+              }
+            ]
+          }
+          ,
+          {
             "Name": "They're Only Chasing Safety",
             "Month" : "Julio",
             "Year" : "1938",
