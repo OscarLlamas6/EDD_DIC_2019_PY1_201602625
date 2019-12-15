@@ -1,0 +1,26 @@
+digraph DiscographyReport{
+
+node[shape=box];
+
+Mt[label="Alfredo", width = 1.5, style = filled, fillcolor = green, group = 1 ];
+e0[ shape = point, width = 0 ];
+e1[ shape = point, width = 0 ];
+M0[label="Abril",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
+M1[label="Julio",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
+
+M0-> M1;
+M1-> M0;
+A0[label="1938", width = 1.5, style = filled, fillcolor = cornsilk, group = 2];
+A1[label="2011", width = 1.5, style = filled, fillcolor = cornsilk, group = 3];
+
+A0-> A1;
+A1-> A0;
+
+Mt -> M0;
+Mt -> A0;
+M0 -> Mt;
+A0 -> Mt;
+
+{ rank = same; Mt;A0;A1;}
+
+}

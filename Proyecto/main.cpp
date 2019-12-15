@@ -93,7 +93,7 @@ void ReproducirCancion(NodoCancion *n){
 
 
 void DezplegarCanciones(NodoCubo *n){
-system("cls");
+    system("cls");
     string name_aux = n->getAlbum()->getName();
     std::for_each(name_aux.begin(), name_aux.end(), [](char & c) {
 		c = ::toupper(c);});
@@ -186,6 +186,7 @@ void DezplegarAlbums(NodoArtista *n){
     }
 }
 
+
 void menuArtistas(){
     system("cls");
     cout << "---------------\"[ARTISTAS]\"---------------"<< endl;
@@ -199,7 +200,7 @@ void menuArtistas(){
         x++;
     }
     cout << endl;
-    cout << "Ingrese el numero del album deseado." << endl;
+    cout << "Ingrese el numero del artista deseado." << endl;
     } else {
     cout << endl;
     cout << "No hay artistas disponibles." << endl;
@@ -283,6 +284,187 @@ void menuCanciones(){
     }
 }
 
+void DiscographyReport(NodoArtista *n, string name){
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph DiscographyReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=box];" << endl;
+    outfile << endl;
+    outfile << "Mt[label=\"" << name << "\", width = 1.5, style = filled, fillcolor = green, group = 1 ];" << endl;
+    outfile << "e0[ shape = point, width = 0 ];" << endl;
+    outfile << "e1[ shape = point, width = 0 ];" << endl;
+    NodoCubo *aux = n->getArtista()->getDiscografia()->getRaiz()->getAdelante();
+    int y = 0;
+    string mes;
+        while(aux!=0){
+            switch(aux->getY()){
+                case 1: mes = "Enero"; break;
+                case 2: mes = "Febrero"; break;
+                case 3: mes = "Marzo"; break;
+                case 4: mes = "Abril"; break;
+                case 5: mes = "Mayo"; break;
+                case 6: mes = "Junio"; break;
+                case 7: mes = "Julio"; break;
+                case 8: mes = "Agosto"; break;
+                case 9: mes = "Septiembre"; break;
+                case 10: mes = "Octubre"; break;
+                case 11: mes = "Noviembre"; break;
+                case 12: mes = "Diciembre"; break;
+                default: mes = "Unknown"; break;
+            }
+            outfile << "M" << y << "[label=\"" << mes << "\",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];" << endl;
+            aux = aux ->getAdelante();
+            y++;
+        }
+        outfile << endl;
+        int count = 0;
+        while(count<y-1){
+            outfile << "M" << count << "-> M" << count+1 << ";" << endl;
+            outfile << "M" << count+1 << "-> M" << count << ";" << endl;
+            count++;
+        }
+        outfile << endl;
+    aux = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
+        int group = 2;
+        int x = 0;
+        while(aux!=0){
+         outfile << "A" << x << "[label=\"" << aux->getX() << "\", width = 1.5, style = filled, fillcolor = cornsilk, group = " << group << "];" << endl;   
+         aux = aux ->getDerecha();
+         x++;
+         group++;
+        }
+    outfile << endl;
+     count = 0;
+        while(count<x-1){
+            outfile << "A" << count << "-> A" << count+1 << ";" << endl;
+            outfile << "A" << count+1 << "-> A" << count << ";" << endl;
+            count++;
+        }
+    outfile << endl;
+    outfile << "Mt -> M0;" << endl;
+    outfile << "Mt -> A0;" << endl;
+   // outfile << "M0 -> Mt;" << endl;
+  //  outfile << "A0 -> Mt;" << endl;
+
+    string rank = "{ rank = same; Mt;";
+    count = 0;
+        while(count<x){
+            rank+="A"+to_string(count)+";";
+            count++;
+        }
+    rank += "}";
+    outfile << endl;
+    outfile << rank << endl;
+    outfile << endl;
+    outfile << "}" << endl;
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o salida.png");
+    system("salida.png");
+}
+
+
+void SeleccionarArtista(){
+    system("cls");
+    cout << "---------------\"[ARTISTAS]\"---------------"<< endl;
+    cout << endl;
+    int x = 1;
+    if(lista_artistas->getSize()>0){
+        NodoArtista *aux = lista_artistas->getPrimero();
+    while(aux!=0){
+        cout << x << ". " << aux->getArtista()->getName() << endl;
+        aux = aux->getSiguiente();
+        x++;
+    }
+    cout << endl;
+    cout << "Ingrese el numero del artista deseado." << endl;
+    } else {
+    cout << endl;
+    cout << "No hay artistas disponibles." << endl;
+    }   
+    cout << "s - Regresar a MyMusic++." << endl;
+    cout << ">>";
+    string opcion;
+    cin >> opcion;
+    if(opcion == "s" || is_number(opcion)){
+        if(is_number(opcion)){
+            int index;
+            istringstream(opcion)>>index;
+            if(index >0 && index <x){
+                NodoArtista *n = lista_artistas->getArtista_Index(index);
+                DiscographyReport(n, n->getArtista()->getName());                
+                SeleccionarArtista();
+            } else {
+             SeleccionarArtista();   
+            }
+        }       
+    } else {
+        SeleccionarArtista();
+    }
+
+}
+
+void ArtistsReport(){
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph ArtistsReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=record];" << endl;
+    outfile << "rankdir=LR;" << endl;
+    outfile << endl;
+    outfile << "node0[label=\"null\"];" << endl;
+    int x = 1;
+    NodoArtista *aux = lista_artistas->getPrimero();
+        while(aux!=0){
+            outfile << "node" << x <<"[label=\"{|" << aux->getArtista()->getName() << "|}\"];" << endl;
+            aux = aux->getSiguiente();
+            x++;
+        }
+    outfile << "node" << x <<"[label=\"null\"];" << endl;
+    outfile << endl;
+    outfile << "node0->node1[dir=back]" << endl;
+    int count = 1;
+        while(count < x){
+            outfile << "node" << count << "->node" << count+1 << ";" << endl;
+            count++;
+        }
+    count = 1;
+    while(count < x-1){
+            outfile << "node" << count << "->node" << count+1 << "[dir=back];" << endl;
+            count++;
+        }
+    outfile << "}" << endl;
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o salida.png");
+    system("salida.png");
+}
+
+void MyMusic(){
+    system("cls");
+    cout << "---------------\"[MY MUSIC++]\"---------------"<< endl;
+    cout << endl;
+    cout << "Que reporte desea ver?"<< endl;
+    cout << endl;
+    cout << "1. Artists Report\n2. Discography Report\n3. Album Report\n4. Playlists Report\n5. Top 5 Albums By Artist Report\n6. Top 5 Artists Report"<< endl;
+    cout << endl;
+    cout << "s - Regresar al menu principal." << endl;
+    cout << ">>";
+    char c = cin.get();
+    switch (c){
+        case '1': ArtistsReport();
+                  MyMusic();
+                  break;
+        case '2': SeleccionarArtista();
+                  MyMusic();
+                  break;
+        case '3': break;
+        case '4': break;
+        case '5': break;
+        case '6': break;
+        case 's': break;
+        default: MyMusic(); break;
+    } 
+     
+}
+
 void menuPrincipal(){
     system("cls");
     cout << "---------------\"[MENU]\"---------------"<< endl;
@@ -290,20 +472,34 @@ void menuPrincipal(){
     cout << "Que desea hacer?"<< endl;
     cout << endl;
     cout << "1. Ver artistas\n2. Ver canciones\n3. Ver playlists\n4. Importar playlists\n5. My Music++\n6. Salir"<< endl;
-    char c = cin.get();
-    switch (c){
-        case '1': menuArtistas();
+    cout << endl;
+    cout << ">>";
+    string opcion;
+    cin >> opcion;
+        if(is_number(opcion)){
+            int index;
+            istringstream(opcion)>>index;
+            switch (index){
+        case 1: menuArtistas();
                   menuPrincipal();
                   break;
-        case '2': menuCanciones();
+        case 2: menuCanciones();
                   menuPrincipal();
                   break;
-        case '3': break;
-        case '4': break;
-        case '5': break;
-        case '6': break;
+        case 3: break;
+        case 4: break;
+        case 5: MyMusic(); 
+                  menuPrincipal(); 
+                  break;
+        case 6: break;
         default: menuPrincipal(); break;
-    }   
+    } 
+        }  else {
+        menuPrincipal();
+    }     
+    
+    
+      
 }
 
 void MensajeCarga(string anuncio){
