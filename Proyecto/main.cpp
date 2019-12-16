@@ -17,6 +17,7 @@ json libreria; //Variable Json para almacenar la libreria completa en formato js
 json artistas; //Variable Json para almacenar los artistas en formato json
 json albumes;  //Variable Json para almacenar los albumes en formato json
 json canciones; //Variable Json para almacenar las canciones en formato json
+json playlist; //Variable Json para almacenar la playlist completa en formato json
 ListaArtistas *lista_artistas = new ListaArtistas();
 ListaCancionesOrdenada *lista_canciones = new ListaCancionesOrdenada(); //Lista global de canciones
 
@@ -27,6 +28,36 @@ ListaCancionesOrdenada *lista_canciones = new ListaCancionesOrdenada(); //Lista 
     while (clock() < time_end)
     {
     }
+}
+
+ bool TerminaCon(string fullString, string ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
+bool EmpiezaCon(string fullString, string inicio){
+
+    string a = fullString;
+    std::for_each(a.begin(), a.end(), [](char & c) {
+		c = ::tolower(c);});
+
+    if (a.rfind("playlist_", 0) == 0) {
+        return true;
+        } else{
+    return false;
+    }
+}
+
+void BorrarSubStr(std::string & mainStr, const std::string & toErase){
+	size_t pos = mainStr.find(toErase);
+ 
+	if (pos != std::string::npos)
+	{
+		mainStr.erase(pos, toErase.length());
+	}
 }
 
 bool fexists(const std::string& filename) {
@@ -615,6 +646,36 @@ void MyMusic(){
      
 }
 
+void CargarPlaylist(string path){
+    std::ifstream file(path);
+    file >> playlist;
+    string playlist_name = path;
+    std::for_each(playlist_name.begin(), playlist_name.end(), [](char & c) {
+		c = ::tolower(c);});
+    BorrarSubStr(playlist_name,"play_list");
+    playlist_name = playlist_name.substr(0,playlist_name.length()-5);
+    playlist_name[0] = toupper(playlist_name[0]);
+
+}
+
+void MensajeCargaPlaylist(string anuncio){
+    system("cls");
+    cout << "----------------[MUSIC ++]----------------"<< endl;
+    cout << endl;
+    cout << "\t\t CARGA DE PLAYLIST "<< endl;
+    cout << endl;
+    if(anuncio.compare("") !=0){
+    cout << "\t"<< anuncio << endl;} 
+    cout << "\tNombre del archivo (.json): ";     
+    cin >> path;
+    if(fexists(path) && EmpiezaCon(path,"playlist_") && TerminaCon(path,".json")){
+        CargarPlaylist(path);
+    } else {
+        system("cls");
+        MensajeCargaPlaylist("Archivo invalido o inexistente, intente de nuevo.");
+    }
+}
+
 void menuPrincipal(){
     system("cls");
     cout << "---------------\"[MENU]\"---------------"<< endl;
@@ -630,15 +691,17 @@ void menuPrincipal(){
             int index;
             istringstream(opcion)>>index;
             switch (index){
-        case 1: menuArtistas();
+        case 1:   menuArtistas();
                   menuPrincipal();
                   break;
-        case 2: menuCanciones();
+        case 2:   menuCanciones();
                   menuPrincipal();
                   break;
-        case 3: break;
-        case 4: break;
-        case 5: MyMusic(); 
+        case 3:   break;
+        case 4:   MensajeCargaPlaylist("");
+                  menuPrincipal();
+                  break;
+        case 5:   MyMusic(); 
                   menuPrincipal(); 
                   break;
         case 6: break;
