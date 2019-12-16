@@ -468,6 +468,43 @@ void DiscographyReport(NodoArtista *n, string name){
         aux = aux -> getAdelante();
     }
 
+    bool primera_z;
+    y= 0;
+    aux = n->getArtista()->getDiscografia()->getRaiz()->getAdelante();
+    while(aux!=0){
+    fil = aux->getDerecha();
+    col = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
+    x = 0;    
+    while(fil!=0 && col!=0){    
+        if(fil->getX() == col->getX()){
+            NodoCubo *a = fil->getArriba();
+                primera_z = true;
+                count = 0;
+                while(a!=0){
+                    if(primera_z){
+                        primera_z = false;
+                        outfile << "M" << y << "A" << x << "Z" << count << "[label=\"" << a->getAlbum()->getName() << "\", style = filled, fillcolor = yellow];" << endl;
+                        outfile << "M" << y << "A" << x << "-> M" << y << "A" << x << "Z" << count << "[dir=back];" << endl;
+                        outfile << "M" << y << "A" << x << "-> M" << y << "A" << x << "Z" << count << ";" << endl;
+                    } else {
+                        outfile << "M" << y << "A" << x << "Z" << count << "[label=\"" << a->getAlbum()->getName() << "\", style = filled, fillcolor = yellow];" << endl;
+                        outfile << "M" << y << "A" << x << "Z" << count-1 << "-> M" << y << "A" << x << "Z" << count <<  "[dir=back];" << endl;
+                        outfile << "M" << y << "A" << x << "Z" << count-1 << "-> M" << y << "A" << x << "Z" << count <<  ";" << endl;
+                    }
+                    a = a -> getArriba();
+                    count++;
+                }
+            fil = fil->getDerecha();                   
+        }
+        x++;      
+        col = col->getDerecha();       
+    }
+        y++;
+        aux = aux -> getAdelante();
+        outfile << endl;
+    }
+
+
     
 
     outfile << "}" << endl;
@@ -475,7 +512,6 @@ void DiscographyReport(NodoArtista *n, string name){
     system("dot.exe -Tpng salida.dot -o salida.png");
     system("salida.png");
 }
-
 
 void SeleccionarArtista(){
     system("cls");

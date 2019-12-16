@@ -69,6 +69,82 @@
         "Name": "Alfredo",
         "Albums": [
           {
+            "Name": "Alfredo: Solo Exitos Vol. 3",
+            "Month" : "Abril",
+            "Year" : "2012",
+            "Songs": [
+              {
+                "Name": "Young and Aspiringz",
+                "File": "YoungAndAspiring.mp3",
+                "Rating": "8.0"
+              }
+              ,
+              {
+                "Name": "Some Will Seek Forgiveness, Others Escaper",
+                "File": "SomeWillSeekForfiveness.mp3",
+                "Rating": "8.0"
+              }
+            ]
+          }
+          , 
+          {
+            "Name": "Alfredo: Solo Exitos Vol. 2",
+            "Month" : "Febrero",
+            "Year" : "2011",
+            "Songs": [
+              {
+                "Name": "Young and Aspiringz",
+                "File": "YoungAndAspiring.mp3",
+                "Rating": "8.0"
+              }
+              ,
+              {
+                "Name": "Some Will Seek Forgiveness, Others Escaper",
+                "File": "SomeWillSeekForfiveness.mp3",
+                "Rating": "8.0"
+              }
+            ]
+          }
+          ,  
+          {
+            "Name": "Alfredo: Solo Exitos",
+            "Month" : "Enero",
+            "Year" : "2012",
+            "Songs": [
+              {
+                "Name": "Young and Aspiringz",
+                "File": "YoungAndAspiring.mp3",
+                "Rating": "8.0"
+              }
+              ,
+              {
+                "Name": "Some Will Seek Forgiveness, Others Escaper",
+                "File": "SomeWillSeekForfiveness.mp3",
+                "Rating": "8.0"
+              }
+            ]
+          }
+          ,  
+          {
+            "Name": "Still Dre 9",
+            "Month" : "Diciembre",
+            "Year" : "2007",
+            "Songs": [
+              {
+                "Name": "Young and Aspiringz",
+                "File": "YoungAndAspiring.mp3",
+                "Rating": "8.0"
+              }
+              ,
+              {
+                "Name": "Some Will Seek Forgiveness, Others Escaper",
+                "File": "SomeWillSeekForfiveness.mp3",
+                "Rating": "8.0"
+              }
+            ]
+          }
+          ,  
+          {
             "Name": "Still Dre 10",
             "Month" : "Diciembre",
             "Year" : "2007",

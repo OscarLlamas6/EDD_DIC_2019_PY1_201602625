@@ -3,24 +3,152 @@ digraph DiscographyReport{
 node[shape=box];
 
 Mt[label="Alfredo", width = 1.5, style = filled, fillcolor = green, group = 1 ];
-e0[ shape = point, width = 0 ];
-e1[ shape = point, width = 0 ];
-M0[label="Abril",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
-M1[label="Julio",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
+M0[label="Enero",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
+M1[label="Febrero",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
+M2[label="Abril",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
+M3[label="Julio",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
+M4[label="Octubre",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
+M5[label="Diciembre",width = 1.5, style = filled, fillcolor = darkslategrey, fontcolor = white, group = 1 ];
 
+M0-> M1[dir=back];
 M0-> M1;
-M1-> M0;
+M1-> M2[dir=back];
+M1-> M2;
+M2-> M3[dir=back];
+M2-> M3;
+M3-> M4[dir=back];
+M3-> M4;
+M4-> M5[dir=back];
+M4-> M5;
+
 A0[label="1938", width = 1.5, style = filled, fillcolor = cornsilk, group = 2];
-A1[label="2011", width = 1.5, style = filled, fillcolor = cornsilk, group = 3];
+A1[label="2002", width = 1.5, style = filled, fillcolor = cornsilk, group = 3];
+A2[label="2007", width = 1.5, style = filled, fillcolor = cornsilk, group = 4];
+A3[label="2011", width = 1.5, style = filled, fillcolor = cornsilk, group = 5];
+A4[label="2012", width = 1.5, style = filled, fillcolor = cornsilk, group = 6];
 
+A0-> A1[dir=back];
 A0-> A1;
-A1-> A0;
+A1-> A2[dir=back];
+A1-> A2;
+A2-> A3[dir=back];
+A2-> A3;
+A3-> A4[dir=back];
+A3-> A4;
 
+Mt -> M0 [dir=back];
 Mt -> M0;
+Mt -> A0 [dir=back];
 Mt -> A0;
-M0 -> Mt;
-A0 -> Mt;
 
-{ rank = same; Mt;A0;A1;}
+{ rank = same; Mt;A0;A1;A2;A3;A4;}
+
+M0A3[label = "Still Dre 7", width = 1.5, group =5];
+M0A4[label = "Alfredo: Solo Exitos", width = 1.5, group =6];
+
+M1A1[label = "Still Dre 2", width = 1.5, group =3];
+M1A3[label = "Alfredo: Solo Exitos Vol. 2", width = 1.5, group =5];
+
+M2A1[label = "Still Dre", width = 1.5, group =3];
+M2A2[label = "Still Dre 6", width = 1.5, group =4];
+M2A3[label = "Erase Me", width = 1.5, group =5];
+M2A4[label = "Alfredo: Solo Exitos Vol. 3", width = 1.5, group =6];
+
+M3A0[label = "They're Only Chasing Safety", width = 1.5, group =2];
+M3A3[label = "Still Dre 4", width = 1.5, group =5];
+M3A4[label = "Still Dre 7", width = 1.5, group =6];
+
+M4A0[label = "Still Dre 5", width = 1.5, group =2];
+M4A1[label = "The Real Slim Shaddy", width = 1.5, group =3];
+
+M5A2[label = "Still Dre 9", width = 1.5, group =4];
+
+M0-> M0A3[dir=back];
+M0-> M0A3;
+M0A3-> M0A4[dir=back];
+M0A3-> M0A4;
+
+M1-> M1A1[dir=back];
+M1-> M1A1;
+M1A1-> M1A3[dir=back];
+M1A1-> M1A3;
+
+M2-> M2A1[dir=back];
+M2-> M2A1;
+M2A1-> M2A2[dir=back];
+M2A1-> M2A2;
+M2A2-> M2A3[dir=back];
+M2A2-> M2A3;
+M2A3-> M2A4[dir=back];
+M2A3-> M2A4;
+
+M3-> M3A0[dir=back];
+M3-> M3A0;
+M3A0-> M3A3[dir=back];
+M3A0-> M3A3;
+M3A3-> M3A4[dir=back];
+M3A3-> M3A4;
+
+M4-> M4A0[dir=back];
+M4-> M4A0;
+M4A0-> M4A1[dir=back];
+M4A0-> M4A1;
+
+M5-> M5A2[dir=back];
+M5-> M5A2;
+
+A0-> M3A0[dir=back];
+A0-> M3A0;
+M3A0-> M4A0[dir=back];
+M3A0-> M4A0;
+
+A1-> M1A1[dir=back];
+A1-> M1A1;
+M1A1-> M2A1[dir=back];
+M1A1-> M2A1;
+M2A1-> M4A1[dir=back];
+M2A1-> M4A1;
+
+A2-> M2A2[dir=back];
+A2-> M2A2;
+M2A2-> M5A2[dir=back];
+M2A2-> M5A2;
+
+A3-> M0A3[dir=back];
+A3-> M0A3;
+M0A3-> M1A3[dir=back];
+M0A3-> M1A3;
+M1A3-> M2A3[dir=back];
+M1A3-> M2A3;
+M2A3-> M3A3[dir=back];
+M2A3-> M3A3;
+
+A4-> M0A4[dir=back];
+A4-> M0A4;
+M0A4-> M2A4[dir=back];
+M0A4-> M2A4;
+M2A4-> M3A4[dir=back];
+M2A4-> M3A4;
+
+{ rank = same; M0;M0A3;M0A4;}
+{ rank = same; M1;M1A1;M1A3;}
+{ rank = same; M2;M2A1;M2A2;M2A3;M2A4;}
+{ rank = same; M3;M3A0;M3A3;M3A4;}
+{ rank = same; M4;M4A0;M4A1;}
+{ rank = same; M5;M5A2;}
+
+M1A3Z0[label="Still Dre 3", style = filled, fillcolor = yellow];
+M1A3-> M1A3Z0[dir=back];
+M1A3-> M1A3Z0;
+
+
+
+
+M5A2Z0[label="Still Dre 10", style = filled, fillcolor = yellow];
+M5A2-> M5A2Z0[dir=back];
+M5A2-> M5A2Z0;
+M5A2Z1[label="Still Dre 9", style = filled, fillcolor = yellow];
+M5A2Z0-> M5A2Z1[dir=back];
+M5A2Z0-> M5A2Z1;
 
 }

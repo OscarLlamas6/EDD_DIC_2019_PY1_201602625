@@ -63,7 +63,7 @@ public:
     }
 
     void ApilarNodo(NodoCubo *n, int x, int y){ //APILAMOS NODOS EN EJE Z
-        NodoCubo *aux = this->raiz;
+        NodoCubo *aux = this->raiz->getDerecha();
         while(aux->getX()!=x){aux = aux->getDerecha();}
         while(aux->getY() != y){aux = aux->getAdelante();}
         if(aux->getArriba()==0){
