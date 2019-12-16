@@ -2,6 +2,7 @@
 #include <fstream>
 #include "NodoCubo.cpp"
 #include <string>
+#include <time.h>
 using namespace std; 
 
 class CuboDiscografia{
@@ -19,11 +20,21 @@ public:
     
     int getSize(){ return this->size; }
 
+    void sleepcp(int milliseconds) { // Función para pausar ejecución
+
+    clock_t time_end;
+    time_end = clock() + milliseconds * CLOCKS_PER_SEC/1000;
+    while (clock() < time_end)
+    {
+    }
+}
+
+
     void insertar_nodo(int x, string y, Album *a){
         add_X(x, a); //Creamos cabecera en X (en caso que no exista)
         add_Y(y, a); //Creamos cabecera en Y (en caso que no exista)
         NodoCubo *n = new NodoCubo(x,y,a); //Creamos nuevo nodo
-        if(!NodoExiste(x,n->getY())){        
+        if(!NodoExiste(x,n->getY())){       
         X_link(n, x); //Seteamos enlaces en X
         Y_link(n, n->getY()); //Seteamos enlaces en Y
         }else {
@@ -32,14 +43,23 @@ public:
         this->size++;
     }
 
+
+
     bool NodoExiste(int x, int y){ //VERIFICAMOS SI YA EXISTE UN NODO CREADO EN UNA COORDENADA ESPECIFICA
-        NodoCubo *aux = this->raiz;
-        while(aux->getX()!=x){aux = aux->getDerecha();}
-        while(aux->getAdelante() != 0){
-            if(aux->getY() == y){return true;}
-            aux = aux ->getAdelante();
+        
+        NodoCubo *fil;
+        NodoCubo *aux = this->raiz->getAdelante();
+        while(aux!=0){
+        fil = aux->getDerecha();
+        while(fil !=0){
+            if(fil->getX() == x && fil->getY() == y){
+                return true;
+            }
+        fil = fil ->getDerecha();
         }
-        return false;       
+        aux = aux ->getAdelante(); 
+        }
+        return false;            
     }
 
     void ApilarNodo(NodoCubo *n, int x, int y){ //APILAMOS NODOS EN EJE Z
@@ -111,7 +131,7 @@ public:
             aux->setAdelante(n);
             n->setAtras(aux);
         } else {
-            while(aux->getAdelante() != 0 && aux->getY() < n->getY()){
+            while(aux->getAdelante() != 0 && aux->getAdelante()->getY() < n->getY()){
                 aux = aux ->getAdelante();                         
             }
            if(aux->getAdelante()==0){
@@ -135,7 +155,7 @@ public:
             aux->setDerecha(n);
             n->setIzquierda(aux);
         } else { 
-             while(aux->getDerecha() != 0 && aux->getX() < n->getX()){
+             while(aux->getDerecha() != 0 && aux->getDerecha()->getX() < n->getX()){
                 aux = aux ->getDerecha();                         
             }
             if(aux->getDerecha()==0){
@@ -168,12 +188,6 @@ public:
             }
             aux = aux->getDerecha();
         }
-
-
-
-
-
-
 
         } else { return 0; }
     }

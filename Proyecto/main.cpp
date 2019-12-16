@@ -91,7 +91,6 @@ void ReproducirCancion(NodoCancion *n){
     getch();
 }
 
-
 void DezplegarCanciones(NodoCubo *n){
     system("cls");
     string name_aux = n->getAlbum()->getName();
@@ -185,7 +184,6 @@ void DezplegarAlbums(NodoArtista *n){
         DezplegarAlbums(n);
     }
 }
-
 
 void menuArtistas(){
     system("cls");
@@ -291,8 +289,6 @@ void DiscographyReport(NodoArtista *n, string name){
     outfile << "node[shape=box];" << endl;
     outfile << endl;
     outfile << "Mt[label=\"" << name << "\", width = 1.5, style = filled, fillcolor = green, group = 1 ];" << endl;
-    outfile << "e0[ shape = point, width = 0 ];" << endl;
-    outfile << "e1[ shape = point, width = 0 ];" << endl;
     NodoCubo *aux = n->getArtista()->getDiscografia()->getRaiz()->getAdelante();
     int y = 0;
     string mes;
@@ -319,8 +315,8 @@ void DiscographyReport(NodoArtista *n, string name){
         outfile << endl;
         int count = 0;
         while(count<y-1){
+            outfile << "M" << count << "-> M" << count+1 << "[dir=back];" << endl;
             outfile << "M" << count << "-> M" << count+1 << ";" << endl;
-            outfile << "M" << count+1 << "-> M" << count << ";" << endl;
             count++;
         }
         outfile << endl;
@@ -336,8 +332,8 @@ void DiscographyReport(NodoArtista *n, string name){
     outfile << endl;
      count = 0;
         while(count<x-1){
+            outfile << "A" << count << "-> A" << count+1 << "[dir=back];" << endl;
             outfile << "A" << count << "-> A" << count+1 << ";" << endl;
-            outfile << "A" << count+1 << "-> A" << count << ";" << endl;
             count++;
         }
     outfile << endl;
@@ -366,7 +362,7 @@ void DiscographyReport(NodoArtista *n, string name){
     col = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
     x = 0;    
     group = 2;
-    while(fil!=0 && col!=0){
+    while(fil!=0 && col!=0){    
         if(fil->getX() == col->getX()){
             outfile <<"M"<<y<<"A"<<x<<"[label = \"" <<fil->getAlbum()->getName()<<"\", width = 1.5, group ="<<group<<"];"<<endl;
             fil = fil->getDerecha();        
@@ -389,7 +385,6 @@ void DiscographyReport(NodoArtista *n, string name){
     x = 0;    
     primera_x = true;
     while(fil!=0 && col!=0){
-
             if(fil->getX() == col->getX()){
                  if(primera_x){
                 primera_x = false;
@@ -420,10 +415,10 @@ void DiscographyReport(NodoArtista *n, string name){
     aux = n->getArtista()->getDiscografia()->getRaiz()->getDerecha();
     while(aux!=0){
     fil = n->getArtista()->getDiscografia()->getRaiz()->getAdelante();
-    col = aux->getAdelante();
-    y = 0;
+    col = aux->getAdelante();  
     primera_y = true;
-    while(col!=0 && fil!=0){
+    y = 0;
+    while(col!=0 && fil!=0){        
             if(col->getY() == fil->getY()){
                 if(primera_y){
                 primera_y = false;
@@ -435,9 +430,9 @@ void DiscographyReport(NodoArtista *n, string name){
                 outfile << "M" << count << "A" << x << "-> M" << y << "A" << x << ";" << endl;
                 count = y;
             }
-            fil = fil ->getAdelante();
-            y++;                    
-            col = col->getAdelante();                    
+            fil = fil ->getAdelante();                   
+            col = col->getAdelante();      
+            y++;               
             } else {
                 fil = fil ->getAdelante();
                 y++;  
@@ -472,6 +467,8 @@ void DiscographyReport(NodoArtista *n, string name){
         y++;
         aux = aux -> getAdelante();
     }
+
+    
 
     outfile << "}" << endl;
     outfile.close();
