@@ -32,7 +32,7 @@ public:
     }
 
     void dequeue(){
-        if(!estaVacia){
+        if(!estaVacia()){
             NodoCola *aux = frente;
             this->frente = frente->getSiguiente();
             delete aux;

@@ -81,15 +81,13 @@ void ListaDobleCircular<T>::insertar_inicio(T dato){
     if(this->estaVacia()){
         this->primero = n;
         this->ultimo = n;
-        this->vinculo_circular();
-        this->size++;
     } else {
         n->setSiguiente(this->primero);
         this->primero->setAnterior(n);
-        this->primero = n;
-        this->vinculo_circular();
-        this->size++;
+        this->primero = n;        
     }
+    this->vinculo_circular();
+        this->size++;
 }
 
 template<class T>
@@ -100,10 +98,10 @@ void ListaDobleCircular<T>::insertar_final(T dato){
         Nodo *n = new Nodo(dato);
         this->ultimo->setSiguiente(n);
         n->setAnterior(this->ultimo);
-        this->ultimo = n;
-        this->vinculo_circular();
-        this->size++;
+        this->ultimo = n;        
     }
+    this->vinculo_circular();
+    this->size++;
 }
 
 template<class T>

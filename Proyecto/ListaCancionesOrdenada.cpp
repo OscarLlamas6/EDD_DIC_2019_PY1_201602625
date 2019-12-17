@@ -114,4 +114,19 @@ public:
             }              
        } else {return 0;}
     }
+
+    bool CancionExiste(int year, string month, string album, string name, string artist){
+        if(this->size == 0){
+            return false;
+        } else {
+            NodoCancionOrdenado *aux = this->primero;
+            while(aux!=0){
+                if(aux->getCancion()->getYear()==year && aux->getCancion()->getMonth()==month
+                && aux->getCancion()->getAlbum()==album && aux->getCancion()->getName() == name
+                && aux->getCancion()->getArtista() == artist){ return true; }
+                aux = aux->getSiguiente();
+            }
+            return false;
+        }
+    }
 };

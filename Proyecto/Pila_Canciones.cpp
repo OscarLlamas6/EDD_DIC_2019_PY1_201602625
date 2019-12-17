@@ -2,14 +2,14 @@
 #include "NodoPila.cpp"
 using namespace std;
 
-class PilaCancion{
+class PilaCanciones{
 
 private:
     NodoPila *cima;
     int size;
 
 public:
-    PilaCancion(){
+    PilaCanciones(){
         this->cima = 0;
         this->size = 0;
     }

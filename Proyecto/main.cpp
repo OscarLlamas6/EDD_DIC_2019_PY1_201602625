@@ -9,6 +9,7 @@
 #include "Json/json.hpp"
 #include "ListaArtistas.cpp"
 #include "ListaCancionesOrdenada.cpp"
+#include "ArbolPlaylists.cpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -20,6 +21,7 @@ json canciones; //Variable Json para almacenar las canciones en formato json
 json playlist; //Variable Json para almacenar la playlist completa en formato json
 ListaArtistas *lista_artistas = new ListaArtistas();
 ListaCancionesOrdenada *lista_canciones = new ListaCancionesOrdenada(); //Lista global de canciones
+ArbolPlaylists *arbol_playlists = new ArbolPlaylists(); //Arbol de playlists
 
  void sleepcp(int milliseconds) { // Función para pausar ejecución
 
@@ -85,7 +87,6 @@ void Cargar(string path){
             string year = album["Year"];
             int year_int;
             istringstream(year)>>year_int;
-            system("cls");
             string album_aux = album["Name"];
             string mes_aux = album["Month"];
             Album *a = new Album(album_aux, mes_aux, year_int);        
@@ -652,25 +653,62 @@ void CargarPlaylist(string path){
     string playlist_name = path;
     std::for_each(playlist_name.begin(), playlist_name.end(), [](char & c) {
 		c = ::tolower(c);});
-    BorrarSubStr(playlist_name,"play_list");
+    BorrarSubStr(playlist_name,"playlist_");
     playlist_name = playlist_name.substr(0,playlist_name.length()-5);
     playlist_name[0] = toupper(playlist_name[0]);
-
+    string tipo = playlist["Type"];  //obtenemos el tipo de playlist
+    std::for_each(tipo.begin(), tipo.end(), [](char & c) {
+		c = ::tolower(c);});
+    Playlist *p = new Playlist(playlist_name, tipo);
+    canciones = playlist["Songs"]; //obtenemos un arreglo con las canciones de la playlist
+    srand(time(0));
+    for(const auto& cancion : canciones){
+        string year = cancion["Year"];
+        int year_int;
+        istringstream(year)>>year_int;
+        string month = cancion["Month"];
+        string album = cancion["Album"];
+        string name = cancion["Song"];
+        string artist = cancion["Artist"];
+        if(lista_canciones->CancionExiste(year_int, month, album, name, artist)){
+            if(tipo == "queue"){
+                Cancion_Cola *c = new Cancion_Cola(name, album, artist, 0, year_int, month);
+                p->getQueue()->enqueue(c);
+            } else if(tipo == "stack"){
+                Cancion_Pila *c = new Cancion_Pila(name, album, artist, 0, year_int, month);
+                p->getStack()->push(c);
+            } else if(tipo == "shuffle"){
+                Cancion_Shuffle *c = new Cancion_Shuffle(name, album, artist, 0, year_int, month);
+                if(p->getShuffle()->getSize()>0){
+                    p->getShuffle()->insertar_en(c,rand()%(p->getShuffle()->getSize()+1));
+                } else {
+                    p->getShuffle()->insertar_inicio(c);
+                }              
+            } else if(tipo == "circular"){
+                Cancion_Circular *c = new Cancion_Circular(name, album, artist, 0, year_int, month);
+                p->getCircular()->insertar_final(c);
+            }
+        }       
+    }
 }
 
 void MensajeCargaPlaylist(string anuncio){
     system("cls");
-    cout << "----------------[MUSIC ++]----------------"<< endl;
+    cout << "---------------------[MUSIC ++]---------------------"<< endl;
     cout << endl;
     cout << "\t\t CARGA DE PLAYLIST "<< endl;
     cout << endl;
     if(anuncio.compare("") !=0){
     cout << "\t"<< anuncio << endl;} 
-    cout << "\tNombre del archivo (.json): ";     
+    cout << "Ingrese nombre del archivo (.json) o 's' para cancelar " << endl;
+    cout << endl;
+    cout << "\t\t>>";
     cin >> path;
-    if(fexists(path) && EmpiezaCon(path,"playlist_") && TerminaCon(path,".json")){
+    if (path == "s") {
+        return;
+    } else if(fexists(path) && EmpiezaCon(path,"playlist_") && TerminaCon(path,".json")){
         CargarPlaylist(path);
-    } else {
+    }  else {
         system("cls");
         MensajeCargaPlaylist("Archivo invalido o inexistente, intente de nuevo.");
     }
@@ -724,10 +762,10 @@ void MensajeCarga(string anuncio){
     cout << "\t"<< anuncio << endl;} 
     cout << "\tNombre del archivo (.json): ";     
     cin >> path;
-    if(!fexists(path)){
+    if(!fexists(path) && TerminaCon(path,".json")){
         system("cls");
         MensajeCarga("Archivo invalido o inexistente, intente de nuevo.");
-    }   
+    }  
 }
 
  int main(){
@@ -735,6 +773,7 @@ void MensajeCarga(string anuncio){
     MensajeCarga("");
     system ("cls");
     Cargar(path);
+    system ("cls");
     cout << "Libreria cargada con exito. Presione cualquier tecla para continuar";
     getch();
     menuPrincipal();
