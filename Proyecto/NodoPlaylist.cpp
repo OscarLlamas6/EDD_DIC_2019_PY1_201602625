@@ -8,13 +8,16 @@ private:
     Playlist *playlist;
     NodoPlaylist *izquierda;
     NodoPlaylist *derecha;
+    int numero;
 public:
-    NodoPlaylist(Playlist *p){
+    NodoPlaylist(Playlist *p, int numero){
         this->playlist = p;
         this->izquierda = 0;
         this->derecha = 0;
+        this->numero = numero;
     }
 
+    int getNumero(){ return this->numero; }
     Playlist *getPlaylist(){ return this->playlist; }
     NodoPlaylist *getIzquierda(){ return this->izquierda; }
     NodoPlaylist  *getDerecha(){ return this->derecha; }

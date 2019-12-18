@@ -22,6 +22,8 @@ json playlist; //Variable Json para almacenar la playlist completa en formato js
 ListaArtistas *lista_artistas = new ListaArtistas();
 ListaCancionesOrdenada *lista_canciones = new ListaCancionesOrdenada(); //Lista global de canciones
 ArbolPlaylists *arbol_playlists = new ArbolPlaylists(); //Arbol de playlists
+string global_bst = "";
+int nivel = 0;
 
  void sleepcp(int milliseconds) { // Función para pausar ejecución
 
@@ -107,6 +109,35 @@ void Cargar(string path){
     }
 }
 
+
+void GenerarAlbumReport(NodoCubo *n){
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph AlbumReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=record];" << endl;
+    outfile << "rankdir=LR;" << endl;
+    outfile << endl;
+    int x = 1;
+    NodoCancion *aux = n->getAlbum()->getSongs()->getPrimero();
+    while(aux!=0){
+            outfile << "node" << x <<"[label=\"{" << aux->getCancion()->getName() << "|}\"];" << endl;
+            aux = aux->getSiguiente();
+            x++;
+        }
+    outfile << "node" << x <<"[label=\"null\"];" << endl;
+    outfile << endl;
+    int count = 1;
+        while(count < x){
+            outfile << "node" << count << "->node" << count+1 << ";" << endl;
+            count++;
+        }
+    outfile << "}" << endl;
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o AlbumReport.png");
+    system("AlbumReport.png");
+
+}
+
 void ReproducirCancion(NodoCancion *n){
     system("cls");
     cout << "---------------\"[REPRODUCIENDO]\"---------------"<< endl;
@@ -123,7 +154,7 @@ void ReproducirCancion(NodoCancion *n){
     getch();
 }
 
-void DezplegarCanciones(NodoCubo *n){
+void DesplegarCanciones(NodoCubo *n){
     system("cls");
     string name_aux = n->getAlbum()->getName();
     std::for_each(name_aux.begin(), name_aux.end(), [](char & c) {
@@ -156,17 +187,17 @@ void DezplegarCanciones(NodoCubo *n){
             if(index >0 && index <x){
                 NodoCancion *aux = n->getAlbum()->getSongs()->getCancion(index);
                 ReproducirCancion(aux);
-                DezplegarCanciones(n);
+                DesplegarCanciones(n);
             } else {
-             DezplegarCanciones(n); 
+             DesplegarCanciones(n); 
             }
         }       
     } else {
-        DezplegarCanciones(n);
+        DesplegarCanciones(n);
     }
 }
 
-void DezplegarAlbums(NodoArtista *n){
+void DesplegarAlbums(NodoArtista *n, string motivo){
     system("cls");
     string name_aux = n->getArtista()->getName();
     std::for_each(name_aux.begin(), name_aux.end(), [](char & c) {
@@ -206,14 +237,18 @@ void DezplegarAlbums(NodoArtista *n){
             istringstream(opcion)>>index;
             if(index >0 && index <x){
                 NodoCubo *album_aux = n->getArtista()->getDiscografia()->getAlbum(index);
-                DezplegarCanciones(album_aux);
-                DezplegarAlbums(n);
+                if(motivo == "navegacion"){
+                    DesplegarCanciones(album_aux);
+                } else if(motivo == "reporte"){
+                    GenerarAlbumReport(album_aux);
+                }
+                DesplegarAlbums(n,motivo);
             } else {
-             DezplegarAlbums(n);  
+             DesplegarAlbums(n,motivo);  
             }
         }       
     } else {
-        DezplegarAlbums(n);
+        DesplegarAlbums(n,motivo);
     }
 }
 
@@ -245,7 +280,7 @@ void menuArtistas(){
             istringstream(opcion)>>index;
             if(index >0 && index <x){
                 NodoArtista *n = lista_artistas->getArtista_Index(index);
-                DezplegarAlbums(n);
+                DesplegarAlbums(n,"navegacion");
                 menuArtistas();
             } else {
              menuArtistas();   
@@ -255,6 +290,45 @@ void menuArtistas(){
         menuArtistas();
     }
 
+}
+
+void AlbumReport(){
+ system("cls");
+    cout << "---------------\"[ARTISTAS]\"---------------"<< endl;
+    cout << endl;
+    int x = 1;
+    if(lista_artistas->getSize()>0){
+        NodoArtista *aux = lista_artistas->getPrimero();
+    while(aux!=0){
+        cout << x << ". " << aux->getArtista()->getName() << endl;
+        aux = aux->getSiguiente();
+        x++;
+    }
+    cout << endl;
+    cout << "Ingrese el numero del artista deseado." << endl;
+    } else {
+    cout << endl;
+    cout << "No hay artistas disponibles." << endl;
+    }   
+    cout << "s - Regresar al menu principal." << endl;
+    cout << ">>";
+    string opcion;
+    cin >> opcion;
+    if(opcion == "s" || is_number(opcion)){
+        if(is_number(opcion)){
+            int index;
+            istringstream(opcion)>>index;
+            if(index >0 && index <x){
+                NodoArtista *n = lista_artistas->getArtista_Index(index);
+                DesplegarAlbums(n,"reporte");
+               AlbumReport();
+            } else {
+             AlbumReport();   
+            }
+        }       
+    } else {
+        AlbumReport();
+    }
 }
 
 void ReproducirCancionGlobal(NodoCancionOrdenado *n){
@@ -541,8 +615,8 @@ void DiscographyReport(NodoArtista *n, string name){
 
     outfile << "}" << endl;
     outfile.close();
-    system("dot.exe -Tpng salida.dot -o salida.png");
-    system("salida.png");
+    system("dot.exe -Tpng salida.dot -o DiscographyReport.png");
+    system("DiscographyReport.png");
 }
 
 void SeleccionarArtista(){
@@ -615,8 +689,45 @@ void ArtistsReport(){
         }
     outfile << "}" << endl;
     outfile.close();
-    system("dot.exe -Tpng salida.dot -o salida.png");
-    system("salida.png");
+    system("dot.exe -Tpng salida.dot -o ArtistaReport.png");
+    system("ArtistReport.png");
+}
+
+void RecursiveBSTReport(NodoPlaylist *n, string &cadena){
+  
+    if(n!=0){
+    
+        cadena+= "nodo" + to_string(n->getNumero()) + "[label=\"" + n->getPlaylist()->getName() + "\"];\n";
+
+        RecursiveBSTReport(n->getIzquierda(), cadena);
+        RecursiveBSTReport(n->getDerecha(), cadena);
+
+        if(n->getIzquierda()!=0){
+        cadena+= "nodo" +to_string(n->getNumero()) + "-> nodo" + to_string(n->getIzquierda()->getNumero()) + ";\n";
+        }
+
+        if(n->getDerecha()!=0){
+        cadena+= "nodo" +to_string(n->getNumero()) + "-> nodo" + to_string(n->getDerecha()->getNumero()) + ";\n";
+        }
+    }   
+    
+}
+
+
+void PlaylistReport(){
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph PlaylistReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=oval];" << endl;
+    global_bst = "";
+    RecursiveBSTReport(arbol_playlists->getRaiz(), global_bst);
+    outfile << endl;
+    outfile << global_bst<< endl;
+    outfile << endl;
+    outfile << "}" << endl;
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o PlaylistsReport.png");
+    system("PlaylistsReport.png");
 }
 
 void MyMusic(){
@@ -637,8 +748,12 @@ void MyMusic(){
         case '2': SeleccionarArtista();
                   MyMusic();
                   break;
-        case '3': break;
-        case '4': break;
+        case '3': AlbumReport();
+                  MyMusic();
+                  break;
+        case '4': PlaylistReport();
+                  MyMusic();
+                  break;
         case '5': break;
         case '6': break;
         case 's': break;
@@ -690,6 +805,7 @@ void CargarPlaylist(string path){
             }
         }       
     }
+    arbol_playlists->insertar(p);
 }
 
 void MensajeCargaPlaylist(string anuncio){
@@ -714,6 +830,55 @@ void MensajeCargaPlaylist(string anuncio){
     }
 }
 
+void DesplegarCancionesPlaylist(NodoPlaylist *n){
+system("cls");
+    string name_aux = n->getPlaylist()->getName();
+    std::for_each(name_aux.begin(), name_aux.end(), [](char & c) {
+	c = ::toupper(c);});
+    cout << "---------------\"["<<name_aux<<"]\"---------------"<< endl;
+    cout << endl;
+    string c;
+    cin >> c;
+
+
+
+}
+
+void DesplegarPlaylists(){
+system("cls");
+cout << "---------------\"[MY PLAYLISTS]\"---------------"<< endl;
+cout << endl;
+if(!arbol_playlists->EstaVacio()){ 
+    arbol_playlists->inorder();
+    cout << endl;
+    cout << "Ingrese el numero de la playlist deseada." << endl;
+} else {   
+    cout << "\t\tNo hay playlists disponibles." << endl;
+    cout << endl;
+}
+cout << "s - Regresar al menu principal." << endl;
+cout << ">>";
+string opcion;
+cin >> opcion;
+
+if(opcion == "s" || is_number(opcion)){
+        if(is_number(opcion)){
+            int index;
+            istringstream(opcion)>>index;
+            if(index >0 && index < arbol_playlists->getCount()){
+              NodoPlaylist *aux = arbol_playlists->getInorderNode(index);
+              DesplegarCancionesPlaylist(aux);
+              DesplegarPlaylists(); 
+            } else {
+             DesplegarPlaylists();   
+            }
+        }       
+    } else {
+        DesplegarPlaylists();
+    }
+
+}
+
 void menuPrincipal(){
     system("cls");
     cout << "---------------\"[MENU]\"---------------"<< endl;
@@ -735,7 +900,9 @@ void menuPrincipal(){
         case 2:   menuCanciones();
                   menuPrincipal();
                   break;
-        case 3:   break;
+        case 3:   DesplegarPlaylists();
+                  menuPrincipal();
+                  break;
         case 4:   MensajeCargaPlaylist("");
                   menuPrincipal();
                   break;
@@ -743,7 +910,7 @@ void menuPrincipal(){
                   menuPrincipal(); 
                   break;
         case 6: break;
-        default: menuPrincipal(); break;
+        default:  menuPrincipal(); break;
     } 
         }  else {
         menuPrincipal();
