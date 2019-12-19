@@ -19,6 +19,7 @@ public:
     bool estaVacia(){ return this->size==0;}
     NodoCola *getFrente(){ return this->frente; }
     NodoCola *getFin(){ return this->fin; }
+    int getSize(){ return this->size; }
 
     void enqueue(Cancion_Cola *c){
         NodoCola *n = new NodoCola(c);
