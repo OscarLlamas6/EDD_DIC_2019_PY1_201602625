@@ -919,6 +919,107 @@ void ReproducirQueue(NodoPlaylist *n){
 
 }
 
+
+void ReproducirShuffle(NodoPlaylist *n, NodoShuffle *ns){
+    system("cls");
+    string name_aux = ns->getCancion()->getName();
+    std::for_each(name_aux.begin(), name_aux.end(), [](char & c) {
+	c = ::toupper(c);});
+    cout << "---------------\"[REPRODUCIENDO: "<<name_aux<<"]\"---------------"<< endl;
+    cout << endl;
+    cout << "\t Name: " << ns->getCancion()->getName() << endl;
+    cout << "\t Artist: " << ns->getCancion()->getArtista() << endl;
+    cout << "\t Album: " << ns->getCancion()->getAlbum() << endl;
+    cout << "\t Month: " << ns->getCancion()->getMonth() << endl;
+    cout << "\t Year: " << ns->getCancion()->getYear() << endl;
+    cout << "\t Rating: " << ns->getCancion()->getRating() << endl;
+    cout << endl;
+    cout << endl;
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph PlaylistReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=record];" << endl;
+    outfile << "rankdir=LR;" << endl;
+    outfile << endl;
+    outfile << "nodo0[label=\"NULL\"];" << endl;
+    int x  = 1;
+    NodoShuffle *aux = n->getPlaylist()->getShuffle()->getPrimero();
+    while(aux!=0){
+        if(aux == ns){
+            outfile << "nodo" << x << "[label=\""<< aux->getCancion()->getArtista()<<": "<<aux->getCancion()->getName()<<"\", style=filled, fillcolor=yellow];" << endl;
+        }else {
+            outfile << "nodo" << x << "[label=\""<< aux->getCancion()->getArtista()<<": "<<aux->getCancion()->getName()<<"\"];" << endl;  
+        }
+        x++;
+        aux = aux->getSiguiente();
+    }
+    outfile << "nodo" << x << "[label=\"NULL\"];" << endl;
+    outfile << endl;
+    outfile << "nodo0->nodo1[dir=back];" << endl;
+     x = 1;
+    while(x<n->getPlaylist()->getShuffle()->getSize()){
+        outfile << "nodo" << x << "->nodo" << x+1 << ";" << endl;
+        outfile << "nodo" << x << "->nodo" << x+1 << "[dir=back];" << endl;
+        x++;
+    }
+    outfile << "nodo" << x << "->nodo" << x+1 << ";" << endl;
+    outfile << endl;
+    outfile << "}";
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o PlaylistReport.png");
+    if(!play){ 
+    play = true;
+    system("PlaylistReport.png");  }  
+    if(ns->getAnterior()!=0 && ns->getSiguiente()!=0){ //EL NODO TIENE SIGUIENTE Y ANTERIOR
+        cout << "n - Reproducir siguiente cancion." << endl;
+        cout << "b - Reproducir cancion anterior." << endl;
+        cout << endl;
+        cout << "s - Detener reproduccion." << endl;
+        cout << ">>";
+        string opcion;
+        cin >> opcion;
+        if(opcion == "n" || opcion == "b" || opcion == "s"){
+            if(opcion == "n"){ ReproducirShuffle(n,ns->getSiguiente()); }
+            else if(opcion == "b"){ ReproducirShuffle(n,ns->getAnterior()); }
+        } else {
+            ReproducirShuffle(n,ns);
+        }
+    } else if (ns->getAnterior()==0 && ns->getSiguiente()!=0){ //EL NODO TIENE SIGUIENTE PERO NO ANTERIOR
+        cout << "n - Reproducir siguiente cancion." << endl;
+        cout << endl;
+        cout << "s - Detener reproduccion." << endl;
+        cout << ">>";
+        string opcion;
+        cin >> opcion;
+        if(opcion == "n" || opcion == "s"){
+            if(opcion == "n"){ ReproducirShuffle(n,ns->getSiguiente()); }
+        } else {
+            ReproducirShuffle(n,ns);
+        }
+    } else if(ns->getAnterior()!=0 && ns->getSiguiente()==0){ //EL NODO TIENE ANTERIOR PERO NO SIGUIENTE
+        cout << "b - Reproducir cancion anterior." << endl;
+        cout << endl;
+        cout << "s - Detener reproduccion." << endl;
+        cout << ">>";
+        string opcion;
+        cin >> opcion;
+        if(opcion == "b" || opcion == "s"){
+            if(opcion == "b"){ ReproducirShuffle(n,ns->getAnterior()); }
+        } else {
+            ReproducirShuffle(n,ns);
+        }
+    }else if(ns->getAnterior()==0 && ns->getSiguiente()==0){ //EL NODO NO TIENE NI SIGUIENTE NI ANTERIOR (SIZE = 1)
+        cout << endl;
+        cout << "s - Detener reproduccion." << endl;
+        cout << ">>";
+        string opcion;
+        cin >> opcion;
+        if(opcion != "s"){
+            ReproducirShuffle(n,ns);
+        } 
+    }
+}
+
 void DesplegarCancionesPlaylist(NodoPlaylist *n){
     system("cls");
     string name_aux = n->getPlaylist()->getName();
@@ -955,7 +1056,7 @@ void DesplegarCancionesPlaylist(NodoPlaylist *n){
             DesplegarCancionesPlaylist(n);
         }        
         } else {
-        cout << "No hay canciones disponibles." << endl;
+        cout << "No hay canciones disponibles en esta playlist." << endl;
         cout << endl;
         cout << "s - Regresar a MyMusic++." << endl;
         cout << ">>";
@@ -974,18 +1075,18 @@ void DesplegarCancionesPlaylist(NodoPlaylist *n){
                 x++;
             }
             cout << endl;
-        cout << "r - Reproducir playlist." << endl;
-        cout << "s - Regresar a Playlists." << endl;
-        cout << ">>";
-        string opcion;
-        cin >> opcion;
-        if(opcion == "r" || opcion == "s"){
-            if(opcion == "r"){
-                play = false;
-                while(n->getPlaylist()->getQueue()->getFrente()!=0){
-                    ReproducirQueue(n);
-                    sleepcp(3000);
-                    n->getPlaylist()->getQueue()->dequeue();
+            cout << "r - Reproducir playlist." << endl;
+            cout << "s - Regresar a Playlists." << endl;
+            cout << ">>";
+            string opcion;
+            cin >> opcion;
+            if(opcion == "r" || opcion == "s"){
+                if(opcion == "r"){
+                    play = false;
+                    while(n->getPlaylist()->getQueue()->getFrente()!=0){
+                        ReproducirQueue(n);
+                        sleepcp(3000);
+                        n->getPlaylist()->getQueue()->dequeue();
                 }  
                  ReporteNULL();          
             }
@@ -993,7 +1094,7 @@ void DesplegarCancionesPlaylist(NodoPlaylist *n){
             DesplegarCancionesPlaylist(n);
         }  
         } else {
-        cout << "No hay canciones disponibles." << endl;
+        cout << "No hay canciones disponibles en esta playlist." << endl;
         cout << endl;
         cout << "s - Regresar a MyMusic++." << endl;
         cout << ">>";
@@ -1004,12 +1105,38 @@ void DesplegarCancionesPlaylist(NodoPlaylist *n){
         } 
         }
     } else if(n->getPlaylist()->getTipo()=="shuffle") {
-        NodoShuffle *aux = n->getPlaylist()->getShuffle()->getPrimero();
-        while(aux!=0){
-                cout << x << ". " << aux->getCancion()->getArtista()<< ":\t" <<aux->getCancion()->getName() << endl;
-                aux =aux->getSiguiente();
-                x++;
+        if(n->getPlaylist()->getShuffle()->getSize()>0){
+            NodoShuffle *aux = n->getPlaylist()->getShuffle()->getPrimero();
+            while(aux!=0){
+            cout << x << ". " << aux->getCancion()->getArtista()<< ":\t" <<aux->getCancion()->getName() << endl;
+            aux =aux->getSiguiente();
+            x++;
             }
+            cout << endl;
+            cout << "r - Reproducir playlist." << endl;
+            cout << "s - Regresar a Playlists." << endl;
+            cout << ">>";
+            string opcion;
+            cin >> opcion;
+            if(opcion == "r" || opcion == "s"){
+                if(opcion == "r"){
+                     play = false;
+                     ReproducirShuffle(n,n->getPlaylist()->getShuffle()->getPrimero());                            
+            }
+        } else {
+            DesplegarCancionesPlaylist(n);
+        }  
+        } else {
+        cout << "No hay canciones disponibles en esta playlist." << endl;
+        cout << endl;
+        cout << "s - Regresar a MyMusic++." << endl;
+        cout << ">>";
+        string opcion;
+        cin >> opcion;
+        if(opcion != "s"){
+            DesplegarCancionesPlaylist(n);
+        } 
+        }      
     } else if(n->getPlaylist()->getTipo()=="circular") {
         NodoCircular *aux = n->getPlaylist()->getCircular()->getPrimero();
         int i = 0;
