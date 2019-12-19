@@ -833,7 +833,7 @@ void MensajeCargaPlaylist(string anuncio){
 
 void ReporteNULL(){
     std::ofstream outfile ("salida.dot");
-    outfile << "digraph Playlist{" << endl;
+    outfile << "digraph PlaylistReport{" << endl;
     outfile << endl;
     outfile << "node[shape=record];" << endl;
     outfile << "rankdir=LR;" << endl;
@@ -842,22 +842,22 @@ void ReporteNULL(){
     outfile << endl;
     outfile << "}";
     outfile.close();
-    system("dot.exe -Tpng salida.dot -o Playlist.png");
+    system("dot.exe -Tpng salida.dot -o PlaylistReport.png");
     if(!play){ 
     play = true;
-    system("Playlist.png");  }
+    system("PlaylistReport.png");  }
 }
 
-void ReproducirStack(NodoPlaylist *n){
-    NodoPila *aux = n->getPlaylist()->getStack()->getCima();
+void ReproducirStack(NodoPlaylist *n){   
     std::ofstream outfile ("salida.dot");
-    outfile << "digraph Playlist{" << endl;
+    outfile << "digraph PlaylistReport{" << endl;
     outfile << endl;
     outfile << "node[shape=none];" << endl;
     outfile << "rankdir=LR;" << endl;
     outfile << endl;
     outfile << "stack1 [label=<<table border=\"1\" cellspacing=\"0\">" << endl;
     bool EsCima = true;
+    NodoPila *aux = n->getPlaylist()->getStack()->getCima();
     while (aux!=0)
     {   
         if(EsCima){
@@ -876,14 +876,46 @@ void ReproducirStack(NodoPlaylist *n){
     outfile << endl;
     outfile << "}";
     outfile.close();
-    system("dot.exe -Tpng salida.dot -o Playlist.png");
+    system("dot.exe -Tpng salida.dot -o PlaylistReport.png");
     if(!play){ 
     play = true;
-    system("Playlist.png");  }
+    system("PlaylistReport.png");  }
 
 }
 
 void ReproducirQueue(NodoPlaylist *n){
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph PlaylistReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=record];" << endl;
+    outfile << "rankdir=LR;" << endl;
+    outfile << endl;
+    bool EsFrente = true;
+    int x = 0;
+    NodoCola *aux = n->getPlaylist()->getQueue()->getFrente();
+    while(aux!=0){
+        if(EsFrente){
+            EsFrente = false;
+            outfile << "Nodo" << x << "[label=\""<< aux->getCancion()->getArtista()<<": "<<aux->getCancion()->getName()<<"\", style=filled, fillcolor=yellow];" << endl;
+        } else {
+            outfile << "Nodo" << x << "[label=\""<< aux->getCancion()->getArtista()<<": "<<aux->getCancion()->getName()<<"\"];" << endl;
+        }
+        x++;
+        aux = aux->getSiguiente();
+    }
+    x = 0;
+    while(x<n->getPlaylist()->getQueue()->getSize()-1){
+        outfile << "Nodo" << x << "-> Nodo" << x+1 << ";" << endl;
+        x++;
+    }
+    outfile << "Nodo" << x << "-> NULL" << endl;
+    outfile << endl;
+    outfile << "}";
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o PlaylistReport.png");
+    if(!play){ 
+    play = true;
+    system("PlaylistReport.png");  }
 
 }
 
@@ -954,7 +986,8 @@ void DesplegarCancionesPlaylist(NodoPlaylist *n){
                     ReproducirQueue(n);
                     sleepcp(3000);
                     n->getPlaylist()->getQueue()->dequeue();
-                }             
+                }  
+                 ReporteNULL();          
             }
         } else {
             DesplegarCancionesPlaylist(n);
