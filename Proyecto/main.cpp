@@ -10,6 +10,7 @@
 #include "ListaArtistas.cpp"
 #include "ListaCancionesOrdenada.cpp"
 #include "ArbolPlaylists.cpp"
+#include "ListaArtistasRating.cpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -22,6 +23,7 @@ json playlist; //Variable Json para almacenar la playlist completa en formato js
 ListaArtistas *lista_artistas = new ListaArtistas();
 ListaCancionesOrdenada *lista_canciones = new ListaCancionesOrdenada(); //Lista global de canciones
 ArbolPlaylists *arbol_playlists = new ArbolPlaylists(); //Arbol de playlists
+ListaArtistasRating *artistas_rating = new ListaArtistasRating();
 string global_bst = "";
 int nivel = 0;
 bool play = false;
@@ -109,6 +111,7 @@ void Cargar(string path){
         double d = (double)cubo_aux->getSize();
         rating_aux = rating_aux / d;
         artista_aux->setRating(rating_aux);
+        artistas_rating->insertar_ordenado(name_aux,rating_aux);
     }
 }
 
@@ -649,7 +652,6 @@ void Top5AlbumsReport(NodoArtista *n){
     outfile.close();
     system("dot.exe -Tpng salida.dot -o Top5AlbumsByArtistReport.png");
     system("Top5AlbumsByArtistReport.png");
-
 }
 
 void SeleccionarArtista(string reporte){
@@ -766,6 +768,36 @@ void PlaylistReport(){
     system("PlaylistsReport.png");
 }
 
+void Top5ArtistsReport(){
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph Top5ArtistsReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=record];" << endl;
+    outfile << "rankdir=LR;" << endl;
+    outfile << endl;
+    int x = 1;
+    NodoArtistaRating *aux = artistas_rating->getPrimero();
+    while(aux!=0){
+            if(x<=5){
+            outfile << "node" << x <<"[label=\"{" << aux->getArtista()->getName() << " \\nRating: " << to_string(aux->getArtista()->getRating()) << "|}\"];" << endl;
+            aux = aux->getSiguiente();
+            x++;
+            } else{
+                break;
+            }
+        }
+    outfile << endl;
+    int count = 1;
+        while(count < x-1){
+            outfile << "node" << count << "->node" << count+1 << ";" << endl;
+            count++;
+        }
+    outfile << "}" << endl;
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o Top5ArtistsReport.png");
+    system("Top5ArtistsReport.png");
+}
+
 void MyMusic(){
     system("cls");
     cout << "---------------\"[MY MUSIC++]\"---------------"<< endl;
@@ -793,7 +825,9 @@ void MyMusic(){
         case '5': SeleccionarArtista("reporte5");
                   MyMusic();
                   break;
-        case '6': break;
+        case '6': Top5ArtistsReport();
+                  MyMusic();
+                  break;
         case 's': break;
         default: MyMusic(); break;
     } 
@@ -862,6 +896,9 @@ void MensajeCargaPlaylist(string anuncio){
         return;
     } else if(fexists(path) && EmpiezaCon(path,"playlist_") && TerminaCon(path,".json")){
         CargarPlaylist(path);
+        system ("cls");
+        cout << "Playlist cargada con exito. Presione cualquier tecla para continuar";
+        getch();
     }  else {
         system("cls");
         MensajeCargaPlaylist("Archivo invalido o inexistente, intente de nuevo.");

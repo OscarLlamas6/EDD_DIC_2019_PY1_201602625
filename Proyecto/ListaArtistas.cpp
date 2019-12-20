@@ -83,7 +83,7 @@ void insertar_ordenado(string name, double rating){
         while(aux!=0){
             if(name.compare(this->getPrimero()->getArtista()->getName()) == -1){ index=0; break;} //Ingresa al inicio
             if(name.compare(this->getUltimo()->getArtista()->getName()) == 1 || name.compare(this->getUltimo()->getArtista()->getName()) == 0){index=size; break;} //Ingresa al final
-            if(name.compare(aux->getArtista()->getName()) == 1 || name.compare(this->getUltimo()->getArtista()->getName()) == 0){ index++;} //Busca la posición correcta
+            if(name.compare(aux->getArtista()->getName()) == 1 || name.compare(aux->getArtista()->getName()) == 0){ index++;} //Busca la posición correcta
             if(name.compare(aux->getSiguiente()->getArtista()->getName()) == -1){ break;}                 
             aux = aux->getSiguiente();           
         }
