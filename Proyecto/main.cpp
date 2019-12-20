@@ -932,7 +932,6 @@ void ReproducirShuffle(NodoPlaylist *n, NodoShuffle *ns){
     cout << "\t Album: " << ns->getCancion()->getAlbum() << endl;
     cout << "\t Month: " << ns->getCancion()->getMonth() << endl;
     cout << "\t Year: " << ns->getCancion()->getYear() << endl;
-    cout << "\t Rating: " << ns->getCancion()->getRating() << endl;
     cout << endl;
     cout << endl;
     std::ofstream outfile ("salida.dot");
@@ -1019,6 +1018,68 @@ void ReproducirShuffle(NodoPlaylist *n, NodoShuffle *ns){
         } 
     }
 }
+
+void ReproducirCircular(NodoPlaylist *n, NodoCircular *nc){
+    system("cls");
+    string name_aux = nc->getCancion()->getName();
+    std::for_each(name_aux.begin(), name_aux.end(), [](char & c) {
+	c = ::toupper(c);});
+    cout << "---------------\"[REPRODUCIENDO: "<<name_aux<<"]\"---------------"<< endl;
+    cout << endl;
+    cout << "\t Name: " << nc->getCancion()->getName() << endl;
+    cout << "\t Artist: " << nc->getCancion()->getArtista() << endl;
+    cout << "\t Album: " << nc->getCancion()->getAlbum() << endl;
+    cout << "\t Month: " << nc->getCancion()->getMonth() << endl;
+    cout << "\t Year: " << nc->getCancion()->getYear() << endl;
+    cout << endl;
+    cout << endl;
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph PlaylistReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=record];" << endl;
+    outfile << "graph[splines=ortho, rankdir=LR];" << endl;
+    outfile << endl;
+    int x = 0;
+    NodoCircular *aux = n->getPlaylist()->getCircular()->getPrimero();
+    while(x<n->getPlaylist()->getCircular()->getSize()){
+        if(aux == nc){
+            outfile << "nodo" << x << "[label=\""<< aux->getCancion()->getArtista()<<": "<<aux->getCancion()->getName()<<"\", style=filled, fillcolor=yellow];" << endl;
+        }else {
+            outfile << "nodo" << x << "[label=\""<< aux->getCancion()->getArtista()<<": "<<aux->getCancion()->getName()<<"\"];" << endl;  
+        }
+        x++;
+        aux = aux->getSiguiente();
+    }
+    x=0;
+    while(x<n->getPlaylist()->getCircular()->getSize()-1){
+        outfile << "nodo" << x << "->nodo" << x+1 << ";" << endl;
+        outfile << "nodo" << x << "->nodo" << x+1 << "[dir=back];" << endl;
+        x++;
+    }
+    outfile << "nodo" << x << "->nodo" << 0 << "[dir=back, constraint=false];" << endl;
+    outfile << "nodo" << x << "->nodo" << 0 << "[constraint=false];" << endl;
+    outfile << endl;
+    outfile << "}";
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o PlaylistReport.png");
+    if(!play){ 
+    play = true;
+    system("PlaylistReport.png");  }
+    cout << "n - Reproducir siguiente cancion." << endl;
+        cout << "b - Reproducir cancion anterior." << endl;
+        cout << endl;
+        cout << "s - Detener reproduccion." << endl;
+        cout << ">>";
+        string opcion;
+        cin >> opcion;
+        if(opcion == "n" || opcion == "b" || opcion == "s"){
+            if(opcion == "n"){ ReproducirCircular(n,nc->getSiguiente()); }
+            else if(opcion == "b"){ ReproducirCircular(n,nc->getAnterior()); }
+        } else {
+            ReproducirCircular(n,nc);
+        }
+}
+
 
 void DesplegarCancionesPlaylist(NodoPlaylist *n){
     system("cls");
@@ -1138,7 +1199,8 @@ void DesplegarCancionesPlaylist(NodoPlaylist *n){
         } 
         }      
     } else if(n->getPlaylist()->getTipo()=="circular") {
-        NodoCircular *aux = n->getPlaylist()->getCircular()->getPrimero();
+        if(n->getPlaylist()->getCircular()->getSize()>0){
+            NodoCircular *aux = n->getPlaylist()->getCircular()->getPrimero();
         int i = 0;
         while(i<n->getPlaylist()->getCircular()->getSize()){
                 cout << x << ". " << aux->getCancion()->getArtista()<< ":\t" <<aux->getCancion()->getName() << endl;
@@ -1146,6 +1208,31 @@ void DesplegarCancionesPlaylist(NodoPlaylist *n){
                 x++;
                 i++;
             }
+            cout << endl;
+            cout << "r - Reproducir playlist." << endl;
+            cout << "s - Regresar a Playlists." << endl;
+            cout << ">>";
+            string opcion;
+            cin >> opcion;
+            if(opcion == "r" || opcion == "s"){
+                if(opcion == "r"){
+                     play = false;
+                     ReproducirCircular(n,n->getPlaylist()->getCircular()->getPrimero());                            
+            }
+        } else {
+            DesplegarCancionesPlaylist(n);
+        }  
+        } else {
+        cout << "No hay canciones disponibles en esta playlist." << endl;
+        cout << endl;
+        cout << "s - Regresar a MyMusic++." << endl;
+        cout << ">>";
+        string opcion;
+        cin >> opcion;
+        if(opcion != "s"){
+            DesplegarCancionesPlaylist(n);
+        } 
+        }  
     }
 }
 
