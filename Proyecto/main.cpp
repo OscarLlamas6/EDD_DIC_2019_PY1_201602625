@@ -84,6 +84,7 @@ void Cargar(string path){
     lista_artistas->insertar_ordenado(name_aux, 0);
     Artista *artista_aux = lista_artistas->getArtista(name_aux)->getArtista();
     CuboDiscografia *cubo_aux = artista_aux->getDiscografia();
+    ListaAlbumsOrdenados *album_ordenado_aux = artista_aux->getAlbumsOrdenados();
     albumes = artista["Artist"]["Albums"]; //aqui obtenemos un arreglo con cada album del artista actual.
     double rating_aux = 0;   
         for(const auto& album : albumes ){
@@ -103,13 +104,13 @@ void Cargar(string path){
             a->setRating(a->getSongs()->CalculateRating());
             rating_aux+=a->getRating();
             cubo_aux->insertar_nodo(a->getYear(),a->getMonth(),a);
+            album_ordenado_aux->insertar_ordenado(a->getName(),a->getRating());
         }
         double d = (double)cubo_aux->getSize();
         rating_aux = rating_aux / d;
         artista_aux->setRating(rating_aux);
     }
 }
-
 
 void GenerarAlbumReport(NodoCubo *n){
     std::ofstream outfile ("salida.dot");
@@ -620,7 +621,38 @@ void DiscographyReport(NodoArtista *n, string name){
     system("DiscographyReport.png");
 }
 
-void SeleccionarArtista(){
+void Top5AlbumsReport(NodoArtista *n){
+    std::ofstream outfile ("salida.dot");
+    outfile << "digraph Top5AlbumsByArtistReport{" << endl;
+    outfile << endl;
+    outfile << "node[shape=record];" << endl;
+    outfile << "rankdir=LR;" << endl;
+    outfile << endl;
+    int x = 1;
+    NodoAlbumOrdenado *aux = n->getArtista()->getAlbumsOrdenados()->getPrimero();
+    while(aux!=0){
+            if(x<=5){
+            outfile << "node" << x <<"[label=\"{" << aux->getAlbum()->getName() << " \\nRating: " << to_string(aux->getAlbum()->getRating()) << "|}\"];" << endl;
+            aux = aux->getSiguiente();
+            x++;
+            } else{
+                break;
+            }
+        }
+    outfile << endl;
+    int count = 1;
+        while(count < x-1){
+            outfile << "node" << count << "->node" << count+1 << ";" << endl;
+            count++;
+        }
+    outfile << "}" << endl;
+    outfile.close();
+    system("dot.exe -Tpng salida.dot -o Top5AlbumsByArtistReport.png");
+    system("Top5AlbumsByArtistReport.png");
+
+}
+
+void SeleccionarArtista(string reporte){
     system("cls");
     cout << "---------------\"[ARTISTAS]\"---------------"<< endl;
     cout << endl;
@@ -648,14 +680,18 @@ void SeleccionarArtista(){
             istringstream(opcion)>>index;
             if(index >0 && index <x){
                 NodoArtista *n = lista_artistas->getArtista_Index(index);
-                DiscographyReport(n, n->getArtista()->getName());                
-                SeleccionarArtista();
+                if(reporte=="reporte2"){
+                    DiscographyReport(n, n->getArtista()->getName()); 
+                } else if(reporte=="reporte5"){
+                    Top5AlbumsReport(n);
+                }               
+                SeleccionarArtista(reporte);
             } else {
-             SeleccionarArtista();   
+             SeleccionarArtista(reporte);   
             }
         }       
     } else {
-        SeleccionarArtista();
+        SeleccionarArtista(reporte);
     }
 
 }
@@ -714,7 +750,6 @@ void RecursiveBSTReport(NodoPlaylist *n, string &cadena){
     
 }
 
-
 void PlaylistReport(){
     std::ofstream outfile ("salida.dot");
     outfile << "digraph PlaylistReport{" << endl;
@@ -746,7 +781,7 @@ void MyMusic(){
         case '1': ArtistsReport();
                   MyMusic();
                   break;
-        case '2': SeleccionarArtista();
+        case '2': SeleccionarArtista("reporte2");
                   MyMusic();
                   break;
         case '3': AlbumReport();
@@ -755,7 +790,9 @@ void MyMusic(){
         case '4': PlaylistReport();
                   MyMusic();
                   break;
-        case '5': break;
+        case '5': SeleccionarArtista("reporte5");
+                  MyMusic();
+                  break;
         case '6': break;
         case 's': break;
         default: MyMusic(); break;
@@ -918,7 +955,6 @@ void ReproducirQueue(NodoPlaylist *n){
     system("PlaylistReport.png");  }
 
 }
-
 
 void ReproducirShuffle(NodoPlaylist *n, NodoShuffle *ns){
     system("cls");

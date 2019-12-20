@@ -74,7 +74,7 @@ void insertar_en(string name, double rating, int index){
     }   
 }
 
-    void insertar_ordenado(string name, double rating){       
+void insertar_ordenado(string name, double rating){       
         if(this->estaVacia()){
             this->insertar_inicio(name, rating); return;
         }

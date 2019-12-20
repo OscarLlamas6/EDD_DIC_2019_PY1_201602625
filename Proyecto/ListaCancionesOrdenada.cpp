@@ -79,7 +79,7 @@ public:
         while(aux!=0){
             if(name.compare(this->getPrimero()->getCancion()->getName()) == -1){ index=0; break;} //Ingresa al inicio
             if(name.compare(this->getUltimo()->getCancion()->getName()) == 1 || name.compare(this->getUltimo()->getCancion()->getName()) == 0){index=size; break;} //Ingresa al final
-            if(name.compare(aux->getCancion()->getName()) == 1 || name.compare(this->getUltimo()->getCancion()->getName()) == 0){ index++;} //Busca la posición correcta
+            if(name.compare(aux->getCancion()->getName()) == 1 || name.compare(aux->getCancion()->getName()) == 0){ index++;} //Busca la posición correcta
             if(name.compare(aux->getSiguiente()->getCancion()->getName()) == -1){ break;} //valida si ya encontro la posición correcta
             aux = aux->getSiguiente();  
         }
